@@ -526,6 +526,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee173fc10299aa46bdc7ea307f7e393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  workingJobTimeDatasList:
+  - jobNo: 0
+    jobTimeString: 
   offlineTimeData:
     dateTimeString: 
 --- !u!1 &1559235421

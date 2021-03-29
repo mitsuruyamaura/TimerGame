@@ -64,6 +64,8 @@ public class OfflineTimeManager : MonoBehaviour
 
         // オフラインでの経過時間を計算
         CalculateOfflineEarnings();
+
+        LoadOfflineTimeData(0);
     }
 
     /// <summary>
@@ -147,6 +149,10 @@ public class OfflineTimeManager : MonoBehaviour
         Debug.Log($"ゲーム終了時 : セーブ時間 : {str}");
     }   
 
+    /// <summary>
+    /// お使いの開始時間のセーブ
+    /// </summary>
+    /// <param name="jobNo"></param>
     public void SaveWorkingJobTimeData(int jobNo) {    
 
         workingJobTimeDatasList[jobNo].jobTimeString = DateTime.Now.ToBinary().ToString();
@@ -157,5 +163,22 @@ public class OfflineTimeManager : MonoBehaviour
 
         string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log($"仕事開始 : セーブ時間 : {str}");
+    }
+
+    /// <summary>
+    /// お使いの開始時間のロード
+    /// </summary>
+    public void LoadOfflineTimeData(int jobNo) {
+       
+        // セーブデータがあるか確認
+        if (PlayerPrefs.HasKey(WORKING_JOB_SAVE_KEY + jobNo.ToString())) {
+            // セーブデータがある場合
+            string json = PlayerPrefs.GetString(WORKING_JOB_SAVE_KEY + jobNo.ToString());
+            workingJobTimeDatasList[jobNo] = JsonUtility.FromJson<JobTimeData>(json);
+
+            DateTime time = workingJobTimeDatasList[jobNo].GetDateTime();
+            string str =  time.ToString("yyyy/MM/dd HH:mm:ss");
+            Debug.Log($"仕事開始時 : セーブされていた時間 : {str}");
+        } 
     }
 }
