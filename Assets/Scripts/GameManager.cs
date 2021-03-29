@@ -75,6 +75,9 @@ public class GameManager : MonoBehaviour
             // 仕事中の状態にする
             selectedTapPointDetail.isJobs = true;
 
+            // 仕事開始時間のセーブ
+            OfflineTimeManager.instance.SaveWorkingJobTimeData(selectedTapPointDetail.jobData.jobNo);
+
             // 仕事開始
             StartCoroutine(selectedTapPointDetail.StartJobs());
         } else {
