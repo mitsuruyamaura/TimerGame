@@ -12,8 +12,7 @@ public class TapPointDetail : MonoBehaviour
     [SerializeField, Header("このタップポイントのジョブ番号")]
     private int myJobNo;
 
-    [SerializeField]
-    private JobData jobData;
+    public JobData jobData;
 
     private GameManager gameManager;
 
@@ -39,7 +38,7 @@ public class TapPointDetail : MonoBehaviour
         transform.DOPunchScale(Vector3.one * 1.25f, 0.15f).SetEase(Ease.OutBounce);
 
         // TODO ポップアップ表示 このクラスの情報を渡す
-        gameManager.OpenJobsConfirmPopUp(this);
+        gameManager.GenerateJobsConfirmPopUp(this);
     }
 
     /// <summary>

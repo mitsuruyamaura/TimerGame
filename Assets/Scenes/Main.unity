@@ -179,7 +179,7 @@ MonoBehaviour:
   jobData:
     jobNo: 0
     jobTime: 0
-    jobTitle: 
+    jobTitle: "\u304A\u3070\u3042\u3061\u3083\u3093\u306E\u5BB6"
     jobType: 0
 --- !u!114 &166929887
 MonoBehaviour:
@@ -685,6 +685,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tapPointDetailsList:
   - {fileID: 166929886}
+  canvasTran: {fileID: 1559235425}
+  jobsConfirmPopUpPrefab: {fileID: 4161327187499721223, guid: fe29872bfbcb7284488904d227947c6a, type: 3}
 --- !u!4 &1784253551
 Transform:
   m_ObjectHideFlags: 0
