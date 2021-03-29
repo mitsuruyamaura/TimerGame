@@ -175,12 +175,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   btnTapPoint: {fileID: 166929887}
+  imgTapPoint: {fileID: 166929888}
+  jobSprite: {fileID: 21300000, guid: 4a2ea6fa7cea49742b4eff6d4add98db, type: 3}
+  defaultSprite: {fileID: 21300000, guid: e9d4143c19529834981ac6821a04aecd, type: 3}
   myJobNo: 0
   jobData:
     jobNo: 0
     jobTime: 0
     jobTitle: "\u304A\u3070\u3042\u3061\u3083\u3093\u306E\u5BB6"
     jobType: 0
+  isJobs: 0
 --- !u!114 &166929887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -657,6 +661,8 @@ MonoBehaviour:
   - {fileID: 166929886}
   canvasTran: {fileID: 1559235425}
   jobsConfirmPopUpPrefab: {fileID: 4161327187499721223, guid: fe29872bfbcb7284488904d227947c6a, type: 3}
+  charaPrefab: {fileID: 3647126566146376496, guid: a2af1f306244cb8438fc72dcc30febad, type: 3}
+  charasList: []
 --- !u!4 &1784253551
 Transform:
   m_ObjectHideFlags: 0
