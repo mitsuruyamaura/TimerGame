@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,7 +30,8 @@ public class GameManager : MonoBehaviour
 
     void Awake() {
         // TODO ロード
-
+        // TODO お使いのデータのロード
+        OfflineTimeManager.instance.LoadOfflineJobTimeData(0);
     }
 
     void Start() {   // TODO コルーチンにする
@@ -44,6 +46,9 @@ public class GameManager : MonoBehaviour
             tapPointDetailsList[i].SetUpTapPointDetail(this);
 
             // TODO ロードしたデータを照合して、お使い中の場合には非表示にする
+            if (JudgeJobsEnd(tapPointDetailsList[i])) {
+                GenerateChara(tapPointDetailsList[i]);
+            }
         }
     }
 
@@ -99,17 +104,31 @@ public class GameManager : MonoBehaviour
         chara.SetUpChara(this, selectedTapPointDetail);
     }
 
-    /// <summary>
-    /// 仕事中の状態をセーブ
-    /// </summary>
-    private void SaveJobs() {
-        // 仕事の番号　仕事を始めた時間を記録
-    }
+    private bool JudgeJobsEnd(TapPointDetail tapPointDetail) {
 
-    /// <summary>
-    /// 仕事中の状態をロード
-    /// </summary>
-    private void LoadJobs() {
+        // 目標となる時間を TimeSpan にする
+        //TimeSpan addTime = new TimeSpan(0, 0, tapPointDetail.jobData.jobTime, 0);
 
+        // TODO Offline の List と引数の情報を確認
+
+        // お使い開始の時間に目標値を加算する
+        //DateTime resultTime = OfflineTimeManager.instance.workingJobTimeDatasList[0].GetDateTime() + addTime;
+
+        // 現在の時間を取得する
+        DateTime currentDateTime = DateTime.Now;
+
+        // 経過した時間の差分
+        TimeSpan timeElasped = currentDateTime - OfflineTimeManager.instance.workingJobTimeDatasList[0].GetDateTime();
+
+        // 差分値を float 型に変換
+        float elapsedTime = (int)Math.Round(timeElasped.TotalSeconds, 0, MidpointRounding.ToEven);
+        Debug.Log("お使い時間の差分 : " + elapsedTime + " : 秒");
+
+        // 経過時間がお使いにかかる時間よりも同じか多いなら
+        if ((float)tapPointDetail.jobData.jobTime <= elapsedTime) {
+            return true;
+        }
+
+        return false;
     }
 }

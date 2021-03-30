@@ -66,7 +66,7 @@ public class OfflineTimeManager : MonoBehaviour
         CalculateOfflineEarnings();
 
         // TODO お使いのデータのロード
-        LoadOfflineJobTimeData(0);
+        //LoadOfflineJobTimeData(0);
     }
 
     /// <summary>
