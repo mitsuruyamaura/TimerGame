@@ -65,7 +65,8 @@ public class OfflineTimeManager : MonoBehaviour
         // オフラインでの経過時間を計算
         CalculateOfflineEarnings();
 
-        LoadOfflineTimeData(0);
+        // TODO お使いのデータのロード
+        LoadOfflineJobTimeData(0);
     }
 
     /// <summary>
@@ -140,10 +141,12 @@ public class OfflineTimeManager : MonoBehaviour
     /// </summary>
     public void SaveOfflineTimeData() {
         offlineTimeData.dateTimeString = DateTime.Now.ToBinary().ToString();
-        string json = JsonUtility.ToJson(offlineTimeData);
+        
+        PlayerPrefsJsonUtility.SaveSetObjectData(offlineTimeData, SAVE_KEY_STRING);
 
-        PlayerPrefs.SetString(SAVE_KEY_STRING, json);
-        PlayerPrefs.Save();
+        //string json = JsonUtility.ToJson(offlineTimeData);
+        //PlayerPrefs.SetString(SAVE_KEY_STRING, json);
+        //PlayerPrefs.Save();
 
         string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log($"ゲーム終了時 : セーブ時間 : {str}");
@@ -156,10 +159,12 @@ public class OfflineTimeManager : MonoBehaviour
     public void SaveWorkingJobTimeData(int jobNo) {    
 
         workingJobTimeDatasList[jobNo].jobTimeString = DateTime.Now.ToBinary().ToString();
-        string json = JsonUtility.ToJson(workingJobTimeDatasList[jobNo]);
 
-        PlayerPrefs.SetString(WORKING_JOB_SAVE_KEY + jobNo.ToString(), json);
-        PlayerPrefs.Save();
+        PlayerPrefsJsonUtility.SaveSetObjectData(workingJobTimeDatasList[jobNo], WORKING_JOB_SAVE_KEY + jobNo.ToString());
+
+        //string json = JsonUtility.ToJson(workingJobTimeDatasList[jobNo]);
+        //PlayerPrefs.SetString(WORKING_JOB_SAVE_KEY + jobNo.ToString(), json);
+        //PlayerPrefs.Save();
 
         string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log($"仕事開始 : セーブ時間 : {str}");
@@ -168,13 +173,15 @@ public class OfflineTimeManager : MonoBehaviour
     /// <summary>
     /// お使いの開始時間のロード
     /// </summary>
-    public void LoadOfflineTimeData(int jobNo) {
+    public void LoadOfflineJobTimeData(int jobNo) {
        
         // セーブデータがあるか確認
-        if (PlayerPrefs.HasKey(WORKING_JOB_SAVE_KEY + jobNo.ToString())) {
+        if (PlayerPrefsJsonUtility.ExitData(WORKING_JOB_SAVE_KEY + jobNo.ToString())) {            // PlayerPrefs.HasKey(WORKING_JOB_SAVE_KEY + jobNo.ToString())
             // セーブデータがある場合
-            string json = PlayerPrefs.GetString(WORKING_JOB_SAVE_KEY + jobNo.ToString());
-            workingJobTimeDatasList[jobNo] = JsonUtility.FromJson<JobTimeData>(json);
+            var jobTimeData = PlayerPrefsJsonUtility.LoadGetObjectData<JobTimeData>(WORKING_JOB_SAVE_KEY + jobNo.ToString());
+            workingJobTimeDatasList[jobNo] = jobTimeData;
+            //string json = PlayerPrefs.GetString(WORKING_JOB_SAVE_KEY + jobNo.ToString());
+            //workingJobTimeDatasList[jobNo] = JsonUtility.FromJson<JobTimeData>(json);
 
             DateTime time = workingJobTimeDatasList[jobNo].GetDateTime();
             string str =  time.ToString("yyyy/MM/dd HH:mm:ss");
