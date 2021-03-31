@@ -181,7 +181,7 @@ MonoBehaviour:
   myJobNo: 0
   jobData:
     jobNo: 0
-    jobTime: 0
+    jobTime: 1000
     jobTitle: "\u304A\u3070\u3042\u3061\u3083\u3093\u306E\u5BB6"
     jobType: 0
   isJobs: 0
@@ -496,9 +496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee173fc10299aa46bdc7ea307f7e393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  workingJobTimeDatasList:
-  - jobNo: 0
-    jobTimeString: 
+  workingJobTimeDatasList: []
   offlineTimeData:
     dateTimeString: 
 --- !u!1 &1559235421
