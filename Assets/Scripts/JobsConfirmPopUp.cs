@@ -26,12 +26,15 @@ public class JobsConfirmPopUp : MonoBehaviour
 
     private GameManager gameManager;
 
+    private TapPointDetail tapPointDetail;
+
     /// <summary>
     /// ポップアップを設定して開く
     /// </summary>
     /// <param name="gameManager"></param>
-    public void OpenPopUp(GameManager gameManager, JobData jobData) {
+    public void OpenPopUp(GameManager gameManager, TapPointDetail tapPointDetail) {
         this.gameManager = gameManager;
+        this.tapPointDetail = tapPointDetail;
 
         SwitchButtons(false);
         btnSubmit.onClick.AddListener(OnClickSubmit);
@@ -39,9 +42,9 @@ public class JobsConfirmPopUp : MonoBehaviour
 
         canvasGroup.alpha = 0.0f;
 
-        txtJobTime.text = jobData.jobTime.ToString();
-        txtJobType.text = jobData.jobType.ToString();
-        txtJobTitle.text = jobData.jobTitle;
+        txtJobTime.text = tapPointDetail.jobData.jobTime.ToString();
+        txtJobType.text = tapPointDetail.jobData.jobType.ToString();
+        txtJobTitle.text = tapPointDetail.jobData.jobTitle;
 
         canvasGroup.DOFade(1.0f, 0.3f)
             .SetEase(Ease.Linear)
@@ -74,7 +77,7 @@ public class JobsConfirmPopUp : MonoBehaviour
         canvasGroup.DOFade(0f, 0.3f)
             .SetEase(Ease.Linear)
             .OnComplete(() => {
-                gameManager.JudgeSubmitJob(isSubmit);
+                gameManager.JudgeSubmitJob(isSubmit, tapPointDetail);
                 Destroy(gameObject);
             });
     }
