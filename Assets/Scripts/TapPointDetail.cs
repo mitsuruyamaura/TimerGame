@@ -28,6 +28,9 @@ public class TapPointDetail : MonoBehaviour
 
     Tween tween;
 
+    int currentJobTime;
+
+
     void Start() {
         btnTapPoint.onClick.AddListener(OnClickTapPoint);
     }
@@ -78,28 +81,55 @@ public class TapPointDetail : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// お使いの処理
     /// </summary>
+    /// <param name="normaJobTime"></param>
     /// <returns></returns>
-    public IEnumerator StartJobs() {
+    public IEnumerator WorkingJobs(int normaJobTime) {
 
+        // 残っているお使いの時間を設定
+        currentJobTime = normaJobTime;
+
+        // お使いが終わるかを監視
         while (isJobs) {
             // TODO 条件として時間を確認する
+            currentJobTime--;
 
-            yield return new WaitForSeconds(3.0f);
-
-            isJobs = false;
-
-            tween.Kill();
-
+            // 残り時間が 0 以下になったら
+            if (currentJobTime <= 0) {
+                KillTween();
+                isJobs = false;                
+            }
+            //yield return new WaitForSeconds(3.0f);
+           
             yield return null;
         }
+
+        currentJobTime = 0;
 
         // 仕事終了
         Debug.Log("お使い 終了");
 
         // TODO ゲームマネージャーでキャラ生成
         gameManager.GenerateChara(this);
+    }
 
+    /// <summary>
+    /// 残っているお使いの時間を取得
+    /// </summary>
+    /// <returns></returns>
+    public int GetCurrentJobTime() {
+        return currentJobTime;
+    }
+
+    /// <summary>
+    /// Tween を破棄
+    /// </summary>
+    public void KillTween() {
+        tween.Kill();
+    }
+
+    public void ChangeDefaultSprite() {
+        imgTapPoint.sprite = defaultSprite;
     }
 }

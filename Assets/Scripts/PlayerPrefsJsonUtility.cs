@@ -10,7 +10,7 @@ public static class PlayerPrefsJsonUtility
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    public static bool ExitData(string key) {
+    public static bool ExistsData(string key) {
         return PlayerPrefs.HasKey(key);
     }
 
@@ -43,5 +43,13 @@ public static class PlayerPrefsJsonUtility
 
         // 読み込む型を指定して変換して取得
         return JsonUtility.FromJson<T>(json);
+    }
+
+    /// <summary>
+    /// 指定されたキーのデータを削除
+    /// </summary>
+    /// <param name="key"></param>
+    public static void RemoveObjectData(string key) {
+        PlayerPrefs.DeleteKey(key);
     }
 }

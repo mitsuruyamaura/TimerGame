@@ -22,6 +22,11 @@ public class CharaController : MonoBehaviour
 
     private TapPointDetail tapPointDetail;
 
+    /// <summary>
+    /// キャラの設定
+    /// </summary>
+    /// <param name="gameManager"></param>
+    /// <param name="tapPointDetail"></param>
     public void SetUpChara(GameManager gameManager, TapPointDetail tapPointDetail) {
         this.gameManager = gameManager;
         this.tapPointDetail = tapPointDetail;
@@ -30,11 +35,10 @@ public class CharaController : MonoBehaviour
 
         btnChara.onClick.AddListener(OnClickChara);
         btnChara.interactable = true;
-
     }
 
     /// <summary>
-    /// 
+    /// キャラをタップした際の処理
     /// </summary>
     private void OnClickChara() {
         Debug.Log("成果 発表");
