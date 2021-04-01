@@ -94,6 +94,8 @@ public class OfflineTimeManager : MonoBehaviour
         ElaspedTimeInSeconds = (int)Math.Round(timeElasped.TotalSeconds, 0, MidpointRounding.ToEven);
 
         Debug.Log($"オフラインでの経過時間 : {ElaspedTimeInSeconds} 秒");
+
+        DebugManager.instance.DisplayDebugDialog($"オフラインでの経過時間 : {ElaspedTimeInSeconds} 秒");
     }
 
     /// <summary>
@@ -102,6 +104,8 @@ public class OfflineTimeManager : MonoBehaviour
     private void OnApplicationQuit() {
         SaveOfflineTimeData();
         Debug.Log("ゲーム中断。時間のセーブ完了");
+
+        DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
 
         // お使い中のデータがある場合、時間データをセーブ
         for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
@@ -126,12 +130,18 @@ public class OfflineTimeManager : MonoBehaviour
 
             str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             Debug.Log($"今の時間 : {str}");
+
+            DebugManager.instance.DisplayDebugDialog($"ゲーム開始時 : セーブされていた時間 : {str}");
+            DebugManager.instance.DisplayDebugDialog($"今の時間 : {str}");
+
         } else {
             // セーブデータがない場合
             offlineTimeData = CreateOfflineTimeData();
             oldDateTime = DateTime.Now;
             string str = oldDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             Debug.Log($"セーブデータがないので今の時間を取得 : {str}");
+
+            DebugManager.instance.DisplayDebugDialog($"セーブデータがないので今の時間を取得 : {str}");
         }
     }
 
@@ -157,6 +167,8 @@ public class OfflineTimeManager : MonoBehaviour
 
         string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log($"ゲーム終了時 : セーブ時間 : {str}");
+
+        DebugManager.instance.DisplayDebugDialog($"ゲーム終了時 : セーブ時間 : {str}");
     }   
 
     /// <summary>
@@ -184,6 +196,9 @@ public class OfflineTimeManager : MonoBehaviour
         string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log($"仕事中 : セーブ時間 : {str}");
         Debug.Log($"セーブ時の残り時間 : {jobTimeData.elespedJobTime}");
+
+        DebugManager.instance.DisplayDebugDialog($"仕事中 : セーブ時間 : {str}");
+        DebugManager.instance.DisplayDebugDialog($"セーブ時の残り時間 : {jobTimeData.elespedJobTime}");
     }
 
     /// <summary>
@@ -203,6 +218,9 @@ public class OfflineTimeManager : MonoBehaviour
             string str =  time.ToString("yyyy/MM/dd HH:mm:ss");
             Debug.Log($"仕事開始時 : セーブされていた時間 : {str}");
             Debug.Log($"ロード時の残り時間 : {jobTimeData.elespedJobTime}");
+
+            DebugManager.instance.DisplayDebugDialog($"仕事開始時 : セーブされていた時間 : {str}");
+            DebugManager.instance.DisplayDebugDialog($"ロード時の残り時間 : {jobTimeData.elespedJobTime}");
         } 
     }
 
@@ -241,5 +259,18 @@ public class OfflineTimeManager : MonoBehaviour
 
         // セーブデータを削除
         PlayerPrefsJsonUtility.RemoveObjectData(WORKING_JOB_SAVE_KEY + removeJobNo);
+    }
+
+    /// <summary>
+    /// デバッグ用
+    /// すべてのお使いの JobTimeData を削除
+    /// </summary>
+    public void AllRemoveWorkingJobTimeDatasList() {
+        // リストからすべて削除
+        workingJobTimeDatasList.Clear();
+
+        // すべてのセーブデータを削除
+        PlayerPrefsJsonUtility.AllClearSaveData();
+        DebugManager.instance.DisplayDebugDialog("すべてのセーブデータを削除 実行");
     }
 }
