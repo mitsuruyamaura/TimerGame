@@ -51,5 +51,17 @@ public static class PlayerPrefsJsonUtility
     /// <param name="key"></param>
     public static void RemoveObjectData(string key) {
         PlayerPrefs.DeleteKey(key);
+        DebugManager.instance.DisplayDebugDialog("セーブデータを削除　実行 : " + key);
+        Debug.Log("セーブデータを削除　実行 : " + key);
+    }
+
+    /// <summary>
+    /// すべてのセーブデータを削除
+    /// </summary>
+    public static void AllClearSaveData() {
+        PlayerPrefs.DeleteAll();
+
+        DebugManager.instance.DisplayDebugDialog("全セーブデータを削除　実行");
+        Debug.Log("全セーブデータを削除　実行");
     }
 }
