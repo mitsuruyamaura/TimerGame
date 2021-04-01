@@ -105,6 +105,8 @@ public class OfflineTimeManager : MonoBehaviour
         SaveOfflineTimeData();
         Debug.Log("ゲーム中断。時間のセーブ完了");
 
+        DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
+
         // お使い中のデータがある場合、時間データをセーブ
         for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
             SaveWorkingJobTimeData(workingJobTimeDatasList[i].jobNo);
