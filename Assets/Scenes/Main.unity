@@ -183,7 +183,7 @@ MonoBehaviour:
     jobNo: 0
     jobTime: 1000
     jobTitle: "\u304A\u3070\u3042\u3061\u3083\u3093\u306E\u5BB6"
-    jobType: 0
+    jobType: 2
   isJobs: 0
 --- !u!114 &166929887
 MonoBehaviour:
@@ -992,6 +992,9 @@ MonoBehaviour:
   jobsConfirmPopUpPrefab: {fileID: 4161327187499721223, guid: fe29872bfbcb7284488904d227947c6a, type: 3}
   charaPrefab: {fileID: 3647126566146376496, guid: a2af1f306244cb8438fc72dcc30febad, type: 3}
   charasList: []
+  rewardDataSO: {fileID: 11400000, guid: 5995efa330bbdd04283dfd19de557f51, type: 2}
+  JobTypeRewardRatesDataSO: {fileID: 11400000, guid: de986d0172ec09d4a9834c204a9fc132, type: 2}
+  rewardPopUpPrefab: {fileID: 5082059992489857053, guid: 66b79b1dd3bdc9140a79cd98213660c1, type: 3}
 --- !u!4 &1784253551
 Transform:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +21,15 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private List<CharaController> charasList = new List<CharaController>();
+
+    [SerializeField]
+    private RewardDataSO rewardDataSO;
+
+    [SerializeField]
+    private JobTypeRewardRatesDataSO JobTypeRewardRatesDataSO;
+
+    [SerializeField]
+    private RewardPopUp rewardPopUpPrefab;
 
     private JobsConfirmPopUp jobsConfirmPopUp;
 
@@ -160,11 +170,23 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// お使いの成果発表。キャラをタップすると呼び出す
+    /// お使いの成果発表
+    /// キャラをタップすると呼び出す
     /// </summary>
     public void ResultJobs(TapPointDetail tapPointDetail) {
 
         // TODO 結果
+        //Debug.Log("成果 発表");
+
+        // お使いの難しさから褒賞決定
+        RewardData rewardData = GetLotteryForRrewards(tapPointDetail.jobData.jobType);
+        Debug.Log(rewardData.rewardNo);
+
+        // TODO ポップアップ表示
+        //Debug.Log("ポップアップ表示");
+        // 成果ウインドウ生成
+        RewardPopUp rewardPopUp = Instantiate(rewardPopUpPrefab, canvasTran, false);
+        rewardPopUp.SetUpRewardPopUp(rewardData);
 
         // TapPoint の状態を再度押せる状態に戻す
         tapPointDetail.SwtichActivateTapPoint(true);
@@ -174,5 +196,54 @@ public class GameManager : MonoBehaviour
 
         // TODO お使いのリストとセーブデータを削除　キャラをタップしてから消す
         OfflineTimeManager.instance.RemoveWorkingJobTimeDatasList(tapPointDetail.jobData.jobNo);
+    }
+
+    /// <summary>
+    /// お使いのご褒美の抽選
+    /// </summary>
+    private RewardData GetLotteryForRrewards(JobType jobType) {
+        // 難易度による希少度の合計値を算出して、ランダムな値を抽出
+        int randomRarityValue = UnityEngine.Random.Range(0, JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates.Sum());
+
+        Debug.Log(JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates.Sum());
+
+        RarityType rarityType = RarityType.Common;
+        int total = 0;
+        Debug.Log(randomRarityValue);
+
+        // 抽出した値がどの希少度になるか確認
+        for (int i = 0; i < JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList.Count; i++) {
+            total += JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates[i];
+            Debug.Log(total);
+            // 
+            if (randomRarityValue <= total) {
+                // 
+                rarityType = (RarityType)i;
+                break; 
+            }
+        }
+
+        Debug.Log(rarityType);
+
+        // 今回対象となる希少度のデータだけのリストを作成
+        List<RewardData> rewardDatas = new List<RewardData>(rewardDataSO.rewardDatasList.Where(x => x.rarityType == rarityType).ToList());
+
+        // 同じ希少度の合計値を算出して、ランダムな値を抽出
+        int randomRewardValue = UnityEngine.Random.Range(0, rewardDatas.Select(x => x.rarityRate).ToArray().Sum());
+
+        Debug.Log(randomRewardValue);
+
+        // どの褒賞になるか確認
+
+        total = 0;
+        // 抽出した値がどの褒賞になるか確認
+        for (int i = 0; i < rewardDatas.Count; i++) {
+            total += rewardDatas[i].rarityRate;
+
+            if (randomRewardValue <= total) {
+                return rewardDatas[i];
+            }
+        }
+        return null;
     }
 }

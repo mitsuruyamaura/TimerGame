@@ -1,5 +1,5 @@
 /// <summary>
-/// Job ‚ÌŽí—Þ
+/// ‚¨Žg‚¢‚ÌŽí—Þ
 /// </summary>
 public enum JobType {
     Easy,
