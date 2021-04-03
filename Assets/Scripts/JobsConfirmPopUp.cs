@@ -42,7 +42,7 @@ public class JobsConfirmPopUp : MonoBehaviour
 
         canvasGroup.alpha = 0.0f;
 
-        txtJobTime.text = tapPointDetail.jobData.jobTime.ToString();
+        txtJobTime.text = (tapPointDetail.jobData.jobTime / 150).ToString("F0");
         txtJobType.text = tapPointDetail.jobData.jobType.ToString();
         txtJobTitle.text = tapPointDetail.jobData.jobTitle;
 

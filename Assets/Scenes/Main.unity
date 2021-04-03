@@ -1024,7 +1024,7 @@ MonoBehaviour:
   charasList: []
   rewardDataSO: {fileID: 11400000, guid: 5995efa330bbdd04283dfd19de557f51, type: 2}
   JobTypeRewardRatesDataSO: {fileID: 11400000, guid: de986d0172ec09d4a9834c204a9fc132, type: 2}
-  rewardPopUpPrefab: {fileID: 0}
+  rewardPopUpPrefab: {fileID: 5082059992489857053, guid: 66b79b1dd3bdc9140a79cd98213660c1, type: 3}
 --- !u!4 &1784253551
 Transform:
   m_ObjectHideFlags: 0

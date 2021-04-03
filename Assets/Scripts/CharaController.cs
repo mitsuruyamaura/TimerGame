@@ -42,6 +42,7 @@ public class CharaController : MonoBehaviour
     /// </summary>
     private void OnClickChara() {
         gameManager.ResultJobs(tapPointDetail);
+        Destroy(gameObject);
     }
 
     /// <summary>

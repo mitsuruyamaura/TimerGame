@@ -176,17 +176,17 @@ public class GameManager : MonoBehaviour
     public void ResultJobs(TapPointDetail tapPointDetail) {
 
         // TODO 結果
-        Debug.Log("成果 発表");
+        //Debug.Log("成果 発表");
 
         // お使いの難しさから褒賞決定
         RewardData rewardData = GetLotteryForRrewards(tapPointDetail.jobData.jobType);
         Debug.Log(rewardData.rewardNo);
 
         // TODO ポップアップ表示
-        Debug.Log("ポップアップ表示");
+        //Debug.Log("ポップアップ表示");
         // 成果ウインドウ生成
-        //RewardPopUp rewardPopUp = Instantiate(rewardPopUpPrefab, canvasTran, false);
-        //rewardPopUp.SetUpRewardPopUp(rewardData);
+        RewardPopUp rewardPopUp = Instantiate(rewardPopUpPrefab, canvasTran, false);
+        rewardPopUp.SetUpRewardPopUp(rewardData);
 
         // TapPoint の状態を再度押せる状態に戻す
         tapPointDetail.SwtichActivateTapPoint(true);
