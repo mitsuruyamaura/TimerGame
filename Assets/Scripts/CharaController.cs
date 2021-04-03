@@ -41,9 +41,7 @@ public class CharaController : MonoBehaviour
     /// キャラをタップした際の処理
     /// </summary>
     private void OnClickChara() {
-        Debug.Log("成果 発表");
-
-
+        gameManager.ResultJobs(tapPointDetail);
     }
 
     /// <summary>
