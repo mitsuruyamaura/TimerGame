@@ -64,4 +64,23 @@ public static class PlayerPrefsJsonUtility
         DebugManager.instance.DisplayDebugDialog("全セーブデータを削除　実行");
         Debug.Log("全セーブデータを削除　実行");
     }
+
+    /// <summary>
+    /// 整数データのセーブ
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="saveValue"></param>
+    public static void SaveIntData(string key, int saveValue) {
+        PlayerPrefs.SetInt(key, saveValue);
+        PlayerPrefs.Save();
+    }
+
+    /// <summary>
+    /// 整数データのロード
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static int LoadIntData(string key) {
+        return PlayerPrefs.GetInt(key);
+    }
 }

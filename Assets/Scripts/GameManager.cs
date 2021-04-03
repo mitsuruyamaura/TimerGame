@@ -37,6 +37,18 @@ public class GameManager : MonoBehaviour
     void Start() {   // TODO コルーチンにする
         OfflineTimeManager.instance.SetGameManager(this);
 
+        // 褒賞データの最大数を登録
+        GameData.instance.GetMaxRewardDataCount(rewardDataSO.rewardDatasList.Count);
+
+        // 獲得している褒賞データの確認とロード
+        GameData.instance.LoadEarnedRewardData();
+
+        // 獲得している褒賞データがある場合
+        if (GameData.instance.GetEarnedRewardsListCount() > 0) {
+            // 褒賞ポイントをロード
+            GameData.instance.LoadTotalRewardPoint();
+        }
+
         // TODO お使いのデータのロード
         OfflineTimeManager.instance.LoadOfflineJobTimeData(0);
 
@@ -182,6 +194,18 @@ public class GameManager : MonoBehaviour
         RewardData rewardData = GetLotteryForRrewards(tapPointDetail.jobData.jobType);
         Debug.Log(rewardData.rewardNo);
 
+        // 褒賞ポイントを計算
+        GameData.instance.CalulateTotalRewardPoint(rewardData.rewardPoint);
+
+        // 獲得した褒賞を獲得済リストに登録。すでにある場合には所持数を加算
+        GameData.instance.AddEarnedRewardsList(rewardData.rewardNo);
+
+        // 獲得した褒賞のセーブ
+        GameData.instance.SaveEarnedReward(rewardData.rewardNo);
+
+        // 褒賞ポイントのセーブ
+        GameData.instance.SaveTotalRewardPoint();
+
         // TODO ポップアップ表示
         //Debug.Log("ポップアップ表示");
         // 成果ウインドウ生成
@@ -199,7 +223,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// お使いのご褒美の抽選
+    /// お使いの褒賞の抽選
     /// </summary>
     private RewardData GetLotteryForRrewards(JobType jobType) {
         // 難易度による希少度の合計値を算出して、ランダムな値を抽出

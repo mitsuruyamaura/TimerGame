@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 /// <summary>
 /// お使いの種類(難易度)による褒賞の提供割合データ
 /// </summary>
