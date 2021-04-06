@@ -31,7 +31,13 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private RewardPopUp rewardPopUpPrefab;
 
-    private JobsConfirmPopUp jobsConfirmPopUp;
+    [SerializeField]
+    private UnityEngine.UI.Button btnAlbum;
+
+    [SerializeField]
+    private AlbumPopUp AlbumPopUpPrefab;
+
+    private AlbumPopUp albumPopUp;
 
 
     void Start() {   // TODO コルーチンにする
@@ -54,7 +60,9 @@ public class GameManager : MonoBehaviour
 
         // TODO キャラの生成確認
 
-        TapPointSetUp();   
+        TapPointSetUp();
+
+        btnAlbum.onClick.AddListener(OnClickAlbum);
     }
 
     /// <summary>
@@ -95,7 +103,7 @@ public class GameManager : MonoBehaviour
         // TODO ポップアップをインスタンスする 
         Debug.Log("お使い確認用のポップアップを開く");
 
-        jobsConfirmPopUp = Instantiate(jobsConfirmPopUpPrefab, canvasTran, false);
+        JobsConfirmPopUp jobsConfirmPopUp = Instantiate(jobsConfirmPopUpPrefab, canvasTran, false);
 
         // TODO ポップアップに JobData を送る
         jobsConfirmPopUp.OpenPopUp(this, tapPointDetail);
@@ -269,5 +277,26 @@ public class GameManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+    /// <summary>
+    /// アルバムボタンを押した際の動作
+    /// </summary>
+    private void OnClickAlbum() {
+        if (albumPopUp == null) {
+            btnAlbum.transform.DOPunchScale(Vector3.one * 1.1f, 0.1f).SetEase(Ease.InOutQuart);
+
+            albumPopUp = Instantiate(AlbumPopUpPrefab, canvasTran, false);
+            albumPopUp.SetUpAlbumPopUp(rewardDataSO.rewardDatasList.Count, this);
+        }
+    }
+
+    /// <summary>
+    /// RewardNo からRewardData を取得
+    /// </summary>
+    /// <param name="rewardNo"></param>
+    /// <returns></returns>
+    public RewardData GetRewardDataFromRewardNo(int rewardNo) {
+        return rewardDataSO.rewardDatasList.Find(x => x.rewardNo == rewardNo);
     }
 }
