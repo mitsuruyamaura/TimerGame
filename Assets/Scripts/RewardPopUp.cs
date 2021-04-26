@@ -10,6 +10,9 @@ public class RewardPopUp : MonoBehaviour
     private Button btnSubmit;
 
     [SerializeField]
+    private CanvasGroup canvasGroup;
+
+    [SerializeField]
     private Image imgReward;
 
     [SerializeField]
@@ -18,13 +21,10 @@ public class RewardPopUp : MonoBehaviour
     [SerializeField]
     private Text txtRarity;
 
-    [SerializeField]
-    private CanvasGroup canvasGroup;
-
-
     /// <summary>
     /// ポップアップの設定と表示
     /// </summary>
+    /// <param name="rewardData"></param>
     public void SetUpRewardPopUp(RewardData rewardData) {
         canvasGroup.alpha = 0;
 

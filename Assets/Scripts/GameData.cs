@@ -15,10 +15,10 @@ public class GameData : MonoBehaviour
         public int rewardCount;   // 褒賞の所持数
     }
 
-    [Header("獲得している褒賞リスト")]
+    [Header("獲得している褒賞のリスト")]
     public List<EarnedReward> earnedRewardsList = new List<EarnedReward>();
 
-    [Header("褒賞ポイント")]
+    [Header("褒賞ポイントの合計値")]
     public int totalRewardPoint;
 
     private const string EARNED_REWARD_SAVE_KEY = "earnedRewardNo_";
@@ -33,6 +33,15 @@ public class GameData : MonoBehaviour
         } else {
             Destroy(gameObject);
         }
+    }
+
+    /// <summary>
+    /// 褒賞ポイント計算
+    /// </summary>
+    /// <param name="amount"></param>
+    public void CalulateTotalRewardPoint(int amount) {
+        // 褒賞ポイントを計算して合計値算出
+        totalRewardPoint += amount;
     }
 
     /// <summary>
@@ -53,38 +62,6 @@ public class GameData : MonoBehaviour
     }
 
     /// <summary>
-    /// 褒賞ポイント計算
-    /// </summary>
-    /// <param name="amount"></param>
-    public void CalulateTotalRewardPoint(int amount) {
-        // 褒賞ポイントを計算して合計値算出
-        totalRewardPoint += amount;
-    }
-
-    /// <summary>
-    /// 獲得した褒賞のデータのセーブ
-    /// </summary>
-    /// <param name="saveRewardNo"></param>
-    public void SaveEarnedReward(int saveRewardNo) {
-        PlayerPrefsJsonUtility.SaveSetObjectData(earnedRewardsList.Find(x => x.rewardNo == saveRewardNo), EARNED_REWARD_SAVE_KEY + saveRewardNo);
-    }
-
-    /// <summary>
-    /// 獲得した褒賞のデータのロード
-    /// </summary>
-    public void LoadEarnedRewardData() {
-        for (int i = 0; i < maxRewardDataCount; i++) {
-            // セーブされている褒賞のデータが存在しているか確認
-            if (PlayerPrefsJsonUtility.ExistsData(EARNED_REWARD_SAVE_KEY + i)) {
-                // セーブデータがある場合のみロード
-                EarnedReward earnedReward = PlayerPrefsJsonUtility.LoadGetObjectData<EarnedReward>(EARNED_REWARD_SAVE_KEY + i);
-                // リストに追加
-                AddEarnedRewardsList(earnedReward.rewardNo, earnedReward.rewardCount);
-            }
-        }            
-    }
-
-    /// <summary>
     /// 獲得している褒賞のリストを削除
     /// 番号指定ありの場合には指定された褒賞の番号の情報を削除
     /// 番号指定なしの場合にはすべて削除
@@ -98,6 +75,36 @@ public class GameData : MonoBehaviour
             // 指定された褒賞の番号のデータを削除
             earnedRewardsList.Remove(earnedRewardsList.Find(x => x.rewardNo == rewardNo));
         }
+    }
+
+    /// <summary>
+    /// 獲得した褒賞のデータのセーブ
+    /// </summary>
+    /// <param name="saveRewardNo"></param>
+    public void SaveEarnedReward(int saveRewardNo) {
+        PlayerPrefsHelper.SaveSetObjectData(EARNED_REWARD_SAVE_KEY + saveRewardNo, earnedRewardsList.Find(x => x.rewardNo == saveRewardNo));
+    }
+
+    /// <summary>
+    /// 褒賞ポイントのセーブ
+    /// </summary>
+    public void SaveTotalRewardPoint() {
+        PlayerPrefsHelper.SaveIntData(TOTAL_REWARD_POINT_SAVE_KEY, totalRewardPoint);
+    }
+
+    /// <summary>
+    /// 獲得した褒賞のデータのロード
+    /// </summary>
+    public void LoadEarnedRewardData() {
+        for (int i = 0; i < maxRewardDataCount; i++) {
+            // セーブされている褒賞のデータが存在しているか確認
+            if (PlayerPrefsHelper.ExistsData(EARNED_REWARD_SAVE_KEY + i)) {
+                // セーブデータがある場合のみロード
+                EarnedReward earnedReward = PlayerPrefsHelper.LoadGetObjectData<EarnedReward>(EARNED_REWARD_SAVE_KEY + i);
+                // リストに追加
+                AddEarnedRewardsList(earnedReward.rewardNo, earnedReward.rewardCount);
+            }
+        }            
     }
 
     /// <summary>
@@ -117,16 +124,9 @@ public class GameData : MonoBehaviour
     }
 
     /// <summary>
-    /// 褒賞ポイントのセーブ
-    /// </summary>
-    public void SaveTotalRewardPoint() {
-        PlayerPrefsJsonUtility.SaveIntData(TOTAL_REWARD_POINT_SAVE_KEY, totalRewardPoint);
-    }
-
-    /// <summary>
     /// 褒賞ポイントのロード
     /// </summary>
     public void LoadTotalRewardPoint() {
-        totalRewardPoint = PlayerPrefsJsonUtility.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
+        totalRewardPoint = PlayerPrefsHelper.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
     }
 }

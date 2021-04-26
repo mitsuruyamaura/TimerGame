@@ -6,6 +6,11 @@ using DG.Tweening;
 
 public class AlbumPopUp : MonoBehaviour
 {
+    private Vector3 closePos;
+
+    [SerializeField]
+    private Button btnClose;
+
     [SerializeField]
     private Image imgReward;
 
@@ -18,36 +23,43 @@ public class AlbumPopUp : MonoBehaviour
     [SerializeField]
     private List<RewardDetail> rewardDetailsList = new List<RewardDetail>();
 
-    [SerializeField]
-    private Button btnClose;
 
     /// <summary>
     /// AlbumPopUp ÇÃê›íËÇ∆ï\é¶
     /// </summary>
-    public void SetUpAlbumPopUp(int rewardCount, GameManager gameManager) {
+    public void SetUpAlbumPopUp(GameManager gameManager, Vector3 centerPos, Vector3 btnPos) {
+        transform.position = btnPos;
+        closePos = transform.position;
+
         btnClose.onClick.AddListener(OnClickCloseAlbum);
 
-        for (int i = 0; i < rewardCount; i++) {
-            // älìæÇµÇƒÇ¢ÇÈñJè‹Ç©ämîF
-            if (GameData.instance.earnedRewardsList.Exists(x => x.rewardNo == i)) {
-                // älìæÇµÇƒÇ¢ÇÈèÍçáÇ…ÇÕ RewardDetail Çê∂ê¨
-                RewardDetail rewardDetail = Instantiate(rewardDetailPrefab, rewardDetailTran, false);
+        for (int i = 0; i < GameData.instance.GetEarnedRewardsListCount(); i++) {
 
-                // RewardNo Ç©ÇÁ RewardData ÇéÊìæÇµÇƒ RewardDetail Çê›íË
-                rewardDetail.SetUpRewardDetail(gameManager.GetRewardDataFromRewardNo(i), this);
+            // älìæÇµÇƒÇ¢ÇÈñJè‹Çê∂ê¨
+            RewardDetail rewardDetail = Instantiate(rewardDetailPrefab, rewardDetailTran, false);
 
-                // ç≈èâÇÃ RewardDetail Çèâä˙âÊëúÇ…ê›íË
-                if (rewardDetailsList.Count == 0) {
-                    imgReward.sprite = gameManager.GetRewardDataFromRewardNo(i).spriteReward;
-                }
+            // RewardNo Ç©ÇÁ RewardData ÇéÊìæÇµÇƒ RewardDetail Çê›íË
+            rewardDetail.SetUpRewardDetail(gameManager.GetRewardDataFromRewardNo(i), this);
 
-                // List Ç…ìoò^
-                rewardDetailsList.Add(rewardDetail);
+            // ç≈èâÇÃ RewardDetail Çèâä˙âÊëúÇ…ê›íË
+            if (rewardDetailsList.Count == 0) {
+                imgReward.sprite = gameManager.GetRewardDataFromRewardNo(i).spriteReward;
             }
+
+            // ñJè‹àÍóóÇÃ List Ç…ìoò^
+            rewardDetailsList.Add(rewardDetail);
         }
 
+        transform.localScale = Vector3.zero;
+
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Append(transform.DOLocalMove(centerPos, 0.3f).SetEase(Ease.Linear));
+
+        sequence.Join(transform.DOScale(Vector2.one * 1.2f, 0.5f).SetEase(Ease.InBack)).OnComplete(() => { transform.DOScale(Vector2.one, 0.2f); });// .SetEase(Ease.InBack)).
+        //sequence.Join(transform.DOLocalMove(centerPos, 0.3f).SetEase(Ease.Linear));
         // É|ÉbÉvÉAÉbÉvÇèôÅXÇ…ï\é¶
-        transform.DOScale(Vector2.one * 1.2f, 0.3f).SetEase(Ease.InBack).OnComplete(() => { transform.localScale = Vector2.one; });
+        //transform.DOScale(Vector2.one * 1.2f, 0.3f).SetEase(Ease.InBack).OnComplete(() => { transform.localScale = Vector2.one; });
     }
 
     /// <summary>
@@ -62,6 +74,11 @@ public class AlbumPopUp : MonoBehaviour
     /// </summary>
     private void OnClickCloseAlbum() {
         // É|ÉbÉvÉAÉbÉvÇîÒï\é¶ÇµÇƒîjâÛ
-        transform.DOScale(Vector2.zero, 0.3f).SetEase(Ease.Linear).OnComplete(() => { Destroy(gameObject); });       
+        Sequence sequence = DOTween.Sequence();
+
+        sequence.Append(transform.DOScale(Vector2.zero, 0.3f).SetEase(Ease.Linear));
+        sequence.Join(transform.DOMove(closePos, 0.3f).SetEase(Ease.Linear)).OnComplete(() => { Destroy(gameObject); });
+
+        //transform.DOScale(Vector2.zero, 0.3f).SetEase(Ease.Linear).OnComplete(() => { Destroy(gameObject); });       
     }
 }

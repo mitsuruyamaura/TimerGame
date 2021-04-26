@@ -4,30 +4,39 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class CharaController : MonoBehaviour
+public class CharaDetail : MonoBehaviour
 {
     [SerializeField]
     private Button btnChara;
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     private Image imgChara;
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     private Sprite successSprite;
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     private Sprite failureSprite;
 
     private GameManager gameManager;
 
     private TapPointDetail tapPointDetail;
 
+
+    //void Start() {
+    //    btnChara.interactable = false;
+
+    //    btnChara.onClick.AddListener(OnClickChara);
+
+    //    btnChara.interactable = true;
+    //}
+
     /// <summary>
     /// キャラの設定
     /// </summary>
     /// <param name="gameManager"></param>
     /// <param name="tapPointDetail"></param>
-    public void SetUpChara(GameManager gameManager, TapPointDetail tapPointDetail) {
+    public void SetUpCharaDetail(GameManager gameManager, TapPointDetail tapPointDetail) {
         this.gameManager = gameManager;
         this.tapPointDetail = tapPointDetail;
 
@@ -42,8 +51,12 @@ public class CharaController : MonoBehaviour
     /// </summary>
     private void OnClickChara() {
         gameManager.ResultJobs(tapPointDetail);
+
+        Debug.Log("お使いの結果を表示");
         Destroy(gameObject);
     }
+
+    // mi
 
     /// <summary>
     /// 仕事の成否状態でスプライトを変更
