@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cf52b254cf817143a94bb9bbc6373a6, type: 3}
+  m_Name: JobDataSO
+  m_EditorClassIdentifier: 
+  jobDatasList:
+  - jobNo: 0
+    jobTime: 5000
+    jobTitle: "\u304A\u3070\u3042\u3061\u3083\u3093\u5BB6"
+    jobType: 0
+  - jobNo: 1
+    jobTime: 10000
+    jobTitle: "\u4E18\u306E\u6559\u4F1A"
+    jobType: 0
+  - jobNo: 2
+    jobTime: 30000
+    jobTitle: "\u5192\u967A\u8005\u306E\u9152\u5834"
+    jobType: 1
+  - jobNo: 3
+    jobTime: 100000
+    jobTitle: "\u6D77\u5CB8\u6CBF\u3044\u306E\u7D75\u63CF\u304D\u306E\u5BB6"
+    jobType: 1
+  - jobNo: 4
+    jobTime: 200000
+    jobTitle: "\u8857\u306F\u305A\u308C\u306E\u68EE\u5965\u306E\u96A0\u8005\u306E\u5BB6"
+    jobType: 2

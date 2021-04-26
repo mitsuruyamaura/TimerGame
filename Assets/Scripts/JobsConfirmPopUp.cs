@@ -13,6 +13,9 @@ public class JobsConfirmPopUp : MonoBehaviour
     private Button btnCancel;
 
     [SerializeField]
+    private CanvasGroup canvasGroup;
+
+    [SerializeField]
     private Text txtJobTime;
 
     [SerializeField]
@@ -21,18 +24,18 @@ public class JobsConfirmPopUp : MonoBehaviour
     [SerializeField]
     private Text txtJobTitle;
 
-    [SerializeField]
-    private CanvasGroup canvasGroup;
+    private TapPointDetail tapPointDetail;
 
+
+    // mi
     private GameManager gameManager;
 
-    private TapPointDetail tapPointDetail;
 
     /// <summary>
     /// ポップアップを設定して開く
     /// </summary>
     /// <param name="gameManager"></param>
-    public void OpenPopUp(GameManager gameManager, TapPointDetail tapPointDetail) {
+    public void OpenPopUp(TapPointDetail tapPointDetail, GameManager gameManager) {
         this.gameManager = gameManager;
         this.tapPointDetail = tapPointDetail;
 
@@ -42,7 +45,7 @@ public class JobsConfirmPopUp : MonoBehaviour
 
         canvasGroup.alpha = 0.0f;
 
-        txtJobTime.text = (tapPointDetail.jobData.jobTime / 150).ToString("F0");
+        txtJobTime.text = (tapPointDetail.jobData.jobTime / 100).ToString("F0");
         txtJobType.text = tapPointDetail.jobData.jobType.ToString();
         txtJobTitle.text = tapPointDetail.jobData.jobTitle;
 
@@ -53,11 +56,33 @@ public class JobsConfirmPopUp : MonoBehaviour
             });
     }
 
+    //public void OpenPopUp(TapPointDetail tapPointDetail) {
+    //    SwitchButtons(false);
+    //    btnSubmit.onClick.AddListener(OnClickSubmit);
+    //    btnCancel.onClick.AddListener(OnClickCancel);
+
+    //    canvasGroup.alpha = 0.0f;
+
+    //    this.tapPointDetail = tapPointDetail;
+
+    //    txtJobTime.text = (tapPointDetail.jobData.jobTime / 150).ToString("F0");
+    //    txtJobType.text = tapPointDetail.jobData.jobType.ToString();
+    //    txtJobTitle.text = tapPointDetail.jobData.jobTitle;
+
+    //    canvasGroup.DOFade(1.0f, 0.3f)
+    //        .SetEase(Ease.Linear)
+    //        .OnComplete(() => {
+    //            SwitchButtons(true);
+    //        });
+    //}
+
     /// <summary>
     /// 決定
     /// </summary>
     private void OnClickSubmit() {
         ClosePopUp(true);
+
+        Debug.Log("お使いに行く");
     }
 
     /// <summary>
@@ -65,6 +90,8 @@ public class JobsConfirmPopUp : MonoBehaviour
     /// </summary>
     private void OnClickCancel() {
         ClosePopUp(false);
+
+        Debug.Log("お使いには行かない");
     }
 
     /// <summary>
@@ -78,6 +105,11 @@ public class JobsConfirmPopUp : MonoBehaviour
             .SetEase(Ease.Linear)
             .OnComplete(() => {
                 gameManager.JudgeSubmitJob(isSubmit, tapPointDetail);
+
+                //if (isSubmit) {
+                //    tapPointDetail.PrapareteJobs();
+                //}
+
                 Destroy(gameObject);
             });
     }

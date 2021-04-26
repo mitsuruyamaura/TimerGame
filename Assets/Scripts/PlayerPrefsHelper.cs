@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// クラスを Json 形式でセーブ・ロード
 /// </summary>
-public static class PlayerPrefsJsonUtility
+public static class PlayerPrefsHelper
 {
     /// <summary>
     /// 指定したキーのデータが存在しているか確認
@@ -19,16 +19,15 @@ public static class PlayerPrefsJsonUtility
     /// </summary>
     /// <param name="key">データを識別するためのキー</param>
     /// <param name="isSave"></param>
-    public static void SaveSetObjectData<T>(T obj, string key, bool isSave = true) {
+    public static void SaveSetObjectData<T>(string key, T obj) {
         // オブジェクトのデータを Json 形式に変換
         string json = JsonUtility.ToJson(obj);
 
         // セット
         PlayerPrefs.SetString(key, json);
 
-        if (isSave) {
-            PlayerPrefs.Save();
-        }
+        // セットした Key と json をセーブ
+        PlayerPrefs.Save();
     }
 
     /// <summary>
@@ -82,5 +81,24 @@ public static class PlayerPrefsJsonUtility
     /// <returns></returns>
     public static int LoadIntData(string key) {
         return PlayerPrefs.GetInt(key);
+    }
+
+    /// <summary>
+    /// 文字列データのセーブ
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="saveValue"></param>
+    public static void SaveStringData(string key, string saveValue) {
+        PlayerPrefs.SetString(key, saveValue);
+        PlayerPrefs.Save();
+    }
+
+    /// <summary>
+    /// 文字列データのロード
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static string LoadStringData(string key) {
+        return PlayerPrefs.GetString(key);
     }
 }

@@ -7,7 +7,15 @@ public class OfflineTimeManager : MonoBehaviour
 {
     public static OfflineTimeManager instance;
 
-    private const string SAVE_KEY_STRING = "OfflineTime";
+    private DateTime loadDateTime = new DateTime();   // 前回ゲームを止めた時にセーブしている時間
+    private int elaspedTime;    // 経過時間
+
+    private GameManager gameManager;
+
+    private const string SAVE_KEY_DATETIME = "OfflineDateTime";
+    private const string FORMAT = "yyyy/MM/dd HH:mm:ss";
+
+    //private const string SAVE_KEY_STRING = "OfflineTime";
     private const string WORKING_JOB_SAVE_KEY = "workingJobNo_";
 
     /// <summary>
@@ -16,7 +24,7 @@ public class OfflineTimeManager : MonoBehaviour
     [Serializable]
     public class JobTimeData {
         public int jobNo;              // お使いの通し番号
-        public int elespedJobTime;     // お使いの残り時間
+        public int elaspedJobTime;     // お使いの残り時間
         public string jobTimeString;   // DateTime クラスを文字列にするための変数
 
         /// <summary>
@@ -24,17 +32,19 @@ public class OfflineTimeManager : MonoBehaviour
         /// </summary>
         /// <returns></returns>
         public DateTime GetDateTime() {
-            return System.DateTime.FromBinary(System.Convert.ToInt64(jobTimeString));
+            return DateTime.ParseExact(jobTimeString, FORMAT, null);
+            //return System.DateTime.FromBinary(System.Convert.ToInt64(jobTimeString));
         }
     }
 
+    [Header("お使いの時間データのリスト")]
     public List<JobTimeData> workingJobTimeDatasList = new List<JobTimeData>();
 
     /// <summary>
     /// 時間をセーブするための構造体(構造体は値型なので、他のクラスで利用がない場合にはクラスよりも軽く便利)
     /// </summary>
     [Serializable]
-    public struct OfflineTimeData {
+    public struct OfflineTimeData {  // 不要
         public string dateTimeString;   // DateTime 型はシリアライズできないので文字列型にするために利用
 
         /// <summary>
@@ -46,14 +56,8 @@ public class OfflineTimeManager : MonoBehaviour
         }
     }
 
-    public OfflineTimeData offlineTimeData;
-    
-    [Header("前回ゲームを止めた時にセーブしている時間")]
-    public DateTime oldDateTime;
-
-    public float ElaspedTimeInSeconds { get; set; }    // 経過時間のプロパティ
-
-    private GameManager gameManager;
+    [HideInInspector]
+    public OfflineTimeData offlineTimeData;  // 不要
 
 
     void Awake() {
@@ -65,10 +69,10 @@ public class OfflineTimeManager : MonoBehaviour
         }
 
         // セーブデータのロード
-        LoadOfflineTimeData();
+        LoadOfflineDateTime();
 
         // オフラインでの経過時間を計算
-        CalculateOfflineEarnings();
+        CalculateOfflineDateTimeElasped(loadDateTime);
 
         // TODO お使いのデータのロード
         //LoadOfflineJobTimeData(0);
@@ -77,7 +81,7 @@ public class OfflineTimeManager : MonoBehaviour
     /// <summary>
     /// オフラインでの経過時間を計算
     /// </summary>
-    public void CalculateOfflineEarnings() {
+    public int CalculateOfflineDateTimeElasped(DateTime oldDateTime) {
         // 現在の時間を取得
         DateTime currentDateTime = DateTime.Now;
 
@@ -88,26 +92,32 @@ public class OfflineTimeManager : MonoBehaviour
         }
 
         // 経過した時間の差分
-        TimeSpan timeElasped = currentDateTime - oldDateTime;
+        TimeSpan dateTimeElasped = currentDateTime - oldDateTime;
 
-        // 経過時間
-        ElaspedTimeInSeconds = (int)Math.Round(timeElasped.TotalSeconds, 0, MidpointRounding.ToEven);
+        // https://www.delftstack.com/ja/howto/csharp/covert-decimal-to-int-in-csharp/ cast
+        // https://docs.microsoft.com/ja-jp/dotnet/api/system.midpointrounding?view=net-5.0 ToEven
+        // https://docs.microsoft.com/ja-jp/dotnet/api/system.timespan.totalseconds?view=net-5.0 TotalSeconds プロパティ
+        // Math.Round メソッドは 小数点の値を最も近い整数値の10進値に丸めるためのメソッド
+        // 経過時間(Math.Round メソッドを利用して、double 型を int 型に変換。小数点は 0 の位で、数値の丸めの処理の指定は ToEven(数値が 2 つの数値の中間に位置するときに、最も近い偶数の値) を指定) 
+        elaspedTime = (int)Math.Round(dateTimeElasped.TotalSeconds, 0, MidpointRounding.ToEven);
 
-        Debug.Log($"オフラインでの経過時間 : {ElaspedTimeInSeconds} 秒");
+        Debug.Log($"オフラインでの経過時間 : {elaspedTime} 秒");
 
-        DebugManager.instance.DisplayDebugDialog($"オフラインでの経過時間 : {ElaspedTimeInSeconds} 秒");
+        DebugManager.instance.DisplayDebugDialog($"オフラインでの経過時間 : {elaspedTime} 秒");
+
+        return elaspedTime;
     }
 
     /// <summary>
     /// ゲームが終了したときに自動的に呼ばれる
     /// </summary>
     private void OnApplicationQuit() {
-        SaveOfflineTimeData();
+        SaveOfflineDateTime();
         Debug.Log("ゲーム中断。時間のセーブ完了");
 
         DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
 
-        // お使い中のデータがある場合、時間データをセーブ
+        // お使い中のデータがある場合、お使いの時間データをセーブ
         for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
             SaveWorkingJobTimeData(workingJobTimeDatasList[i].jobNo);
         }
@@ -116,29 +126,38 @@ public class OfflineTimeManager : MonoBehaviour
     /// <summary>
     /// オフラインでの時間をロード
     /// </summary>
-    public void LoadOfflineTimeData() {
+    public void LoadOfflineDateTime() {
 
         // セーブデータがあるか確認
-        if (PlayerPrefs.HasKey(SAVE_KEY_STRING)) {
+        if (PlayerPrefsHelper.ExistsData(SAVE_KEY_DATETIME)) {
+
+            string oldDateTimeString = PlayerPrefsHelper.LoadStringData(SAVE_KEY_DATETIME);
+            //Debug.Log(oldDateTimeString);
+
+            //if (!string.IsNullOrEmpty(oldDateTimeString))
+            loadDateTime = DateTime.ParseExact(oldDateTimeString, FORMAT, null);
+
             // セーブデータがある場合
-            string json = PlayerPrefs.GetString(SAVE_KEY_STRING);
-            offlineTimeData = JsonUtility.FromJson<OfflineTimeData>(json);
+            //offlineTimeData = PlayerPrefsHelper.LoadGetObjectData<OfflineTimeData>(SAVE_KEY_STRING);
 
-            oldDateTime = offlineTimeData.GetDateTime();
-            string str = oldDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            Debug.Log($"ゲーム開始時 : セーブされていた時間 : {str}");
+            //string json = PlayerPrefs.GetString(SAVE_KEY_STRING);
+            //offlineTimeData = JsonUtility.FromJson<OfflineTimeData>(json);
 
-            str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            Debug.Log($"今の時間 : {str}");
+            //oldDateTime = offlineTimeData.GetDateTime();
+            //string str = oldDateTime.ToString(FORMAT);
+            Debug.Log($"ゲーム開始時 : セーブされていた時間 : {oldDateTimeString}");
 
-            DebugManager.instance.DisplayDebugDialog($"ゲーム開始時 : セーブされていた時間 : {str}");
-            DebugManager.instance.DisplayDebugDialog($"今の時間 : {str}");
+            //string str = DateTime.Now.ToString(FORMAT);
+            Debug.Log($"今の時間 : {DateTime.Now.ToString(FORMAT)}");
+
+            DebugManager.instance.DisplayDebugDialog($"ゲーム開始時 : セーブされていた時間 : {oldDateTimeString}");
+            DebugManager.instance.DisplayDebugDialog($"今の時間 : {DateTime.Now.ToString(FORMAT)}");
 
         } else {
-            // セーブデータがない場合
-            offlineTimeData = CreateOfflineTimeData();
-            oldDateTime = DateTime.Now;
-            string str = oldDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            // セーブデータがない場合、セーブデータ用の構造体を作成
+            //offlineTimeData = new OfflineTimeData { dateTimeString = DateTime.Now.ToBinary().ToString() };
+            loadDateTime = DateTime.Now;
+            string str = loadDateTime.ToString(FORMAT);
             Debug.Log($"セーブデータがないので今の時間を取得 : {str}");
 
             DebugManager.instance.DisplayDebugDialog($"セーブデータがないので今の時間を取得 : {str}");
@@ -156,98 +175,138 @@ public class OfflineTimeManager : MonoBehaviour
     /// <summary>
     /// 現在の時間をセーブ
     /// </summary>
-    public void SaveOfflineTimeData() {
-        offlineTimeData.dateTimeString = DateTime.Now.ToBinary().ToString();
-        
-        PlayerPrefsJsonUtility.SaveSetObjectData(offlineTimeData, SAVE_KEY_STRING);
+    public void SaveOfflineDateTime() {
+        //offlineTimeData.dateTimeString = DateTime.Now.ToBinary().ToString();
+
+        //string dateTimeString = DateTime.Now.ToBinary().ToString();
+
+
+        //PlayerPrefsHelper.SaveSetObjectData(offlineTimeData, SAVE_KEY_STRING);
+
+
+        string dateTimeString = DateTime.Now.ToString(FORMAT);
+        PlayerPrefsHelper.SaveStringData(SAVE_KEY_DATETIME, dateTimeString);
+
+        //PlayerPrefs.SetString(SAVE_KEY_DATETIME, dateTimeString);
+        //PlayerPrefs.Save();
+
+        //Debug.Log(dateTimeString);
 
         //string json = JsonUtility.ToJson(offlineTimeData);
         //PlayerPrefs.SetString(SAVE_KEY_STRING, json);
         //PlayerPrefs.Save();
 
-        string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-        Debug.Log($"ゲーム終了時 : セーブ時間 : {str}");
+        //string str = DateTime.Now.ToString(FORMAT);
+        Debug.Log($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
 
-        DebugManager.instance.DisplayDebugDialog($"ゲーム終了時 : セーブ時間 : {str}");
-    }   
+        DebugManager.instance.DisplayDebugDialog($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
+    }
 
     /// <summary>
-    /// お使いの開始時間のセーブ
+    ///  各お使いの残り時間の更新
     /// </summary>
     /// <param name="jobNo"></param>
-    public void SaveWorkingJobTimeData(int jobNo) {
-
-        // セーブ対象の JobTimeData を選択
-        JobTimeData jobTimeData = workingJobTimeDatasList.Find(x => x.jobNo == jobNo);
-
-        // 今の時間を設定
-        jobTimeData.jobTimeString = DateTime.Now.ToBinary().ToString();
-
-        // 現在のお使いの残り時間を設定
-        jobTimeData.elespedJobTime = gameManager.GetTapPointDetailCurrentJobTime(jobNo);
-        Debug.Log(jobTimeData.elespedJobTime);
-
-        PlayerPrefsJsonUtility.SaveSetObjectData(jobTimeData, WORKING_JOB_SAVE_KEY + jobTimeData.jobNo.ToString());
-
-        //string json = JsonUtility.ToJson(workingJobTimeDatasList[jobNo]);
-        //PlayerPrefs.SetString(WORKING_JOB_SAVE_KEY + jobNo.ToString(), json);
-        //PlayerPrefs.Save();
-
-        string str = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-        Debug.Log($"仕事中 : セーブ時間 : {str}");
-        Debug.Log($"セーブ時の残り時間 : {jobTimeData.elespedJobTime}");
-
-        DebugManager.instance.DisplayDebugDialog($"仕事中 : セーブ時間 : {str}");
-        DebugManager.instance.DisplayDebugDialog($"セーブ時の残り時間 : {jobTimeData.elespedJobTime}");
+    /// <param name="currentJobTime"></param>
+    public void UpdateCurrentJobTime(int jobNo, int currentJobTime) {
+        workingJobTimeDatasList.Find(x => x.jobNo == jobNo).elaspedJobTime = currentJobTime;
     }
 
     /// <summary>
-    /// お使いの開始時間のロード
+    /// GameManager の情報を取得
     /// </summary>
-    public void LoadOfflineJobTimeData(int jobNo) {
-       
-        // セーブデータがあるか確認
-        if (PlayerPrefsJsonUtility.ExistsData(WORKING_JOB_SAVE_KEY + jobNo.ToString())) {            // PlayerPrefs.HasKey(WORKING_JOB_SAVE_KEY + jobNo.ToString())
-            // セーブデータがある場合
-            JobTimeData jobTimeData = PlayerPrefsJsonUtility.LoadGetObjectData<JobTimeData>(WORKING_JOB_SAVE_KEY + jobNo.ToString());
-            AddWorkingJobTimeDatasList(jobTimeData);
-            //string json = PlayerPrefs.GetString(WORKING_JOB_SAVE_KEY + jobNo.ToString());
-            //workingJobTimeDatasList[jobNo] = JsonUtility.FromJson<JobTimeData>(json);
-
-            DateTime time = jobTimeData.GetDateTime();
-            string str =  time.ToString("yyyy/MM/dd HH:mm:ss");
-            Debug.Log($"仕事開始時 : セーブされていた時間 : {str}");
-            Debug.Log($"ロード時の残り時間 : {jobTimeData.elespedJobTime}");
-
-            DebugManager.instance.DisplayDebugDialog($"仕事開始時 : セーブされていた時間 : {str}");
-            DebugManager.instance.DisplayDebugDialog($"ロード時の残り時間 : {jobTimeData.elespedJobTime}");
-        } 
-    }
-
-    public void SetGameManager(GameManager gameManager) {
-        this.gameManager = gameManager;
-    }
+    /// <param name="gameManager"></param>
+    //public void SetGameManager(GameManager gameManager) {
+    //    this.gameManager = gameManager;
+    //}
 
     /// <summary>
-    /// 現在お使い中の JobTimeData の追加
-    /// </summary>
-    /// <param name="tapPointDetail"></param>
-    public void CreateWorkingJobTimeDatasList(TapPointDetail tapPointDetail) {
-        // JobTimeData を初期化
-        JobTimeData jobTimeData = new JobTimeData { jobNo = tapPointDetail.jobData.jobNo, elespedJobTime = tapPointDetail.jobData.jobTime };
-        AddWorkingJobTimeDatasList(jobTimeData);
-    }
-
-    /// <summary>
-    /// JobTimeData を追加。このリストにある情報が現在お使いをしている内容になる
+    /// List に JobTimeData を追加。このリストにある情報が現在お使いをしている内容になる
     /// </summary>
     /// <param name="jobTimeData"></param>
     public void AddWorkingJobTimeDatasList(JobTimeData jobTimeData) {
         // すでにリストにあるか確認
         if (!workingJobTimeDatasList.Exists(x => x.jobNo == jobTimeData.jobNo)) {
             workingJobTimeDatasList.Add(jobTimeData);
-            Debug.Log(jobTimeData.elespedJobTime);
-        }       
+            Debug.Log(jobTimeData.elaspedJobTime);
+        }
+    }
+
+    /// <summary>
+    /// 現在お使い中の JobTimeData の作成と List への追加
+    /// </summary>
+    /// <param name="tapPointDetail"></param>
+    public void CreateWorkingJobTimeDatasList(TapPointDetail tapPointDetail) {
+        // JobTimeData を初期化
+        JobTimeData jobTimeData = new JobTimeData { jobNo = tapPointDetail.jobData.jobNo, elaspedJobTime = tapPointDetail.jobData.jobTime };
+        AddWorkingJobTimeDatasList(jobTimeData);
+    }
+
+    /// <summary>
+    /// お使いの時間のセーブ
+    /// お使い開始時とゲーム終了時にセーブ
+    /// </summary>
+    /// <param name="jobNo"></param>
+    public void SaveWorkingJobTimeData(int jobNo) {
+
+        // セーブ対象の JobTimeData を設定
+        JobTimeData jobTimeData = workingJobTimeDatasList.Find(x => x.jobNo == jobNo);
+
+        // 今の時間を取得
+        //jobTimeData.jobTimeString = DateTime.Now.ToBinary().ToString();
+
+        jobTimeData.jobTimeString = DateTime.Now.ToString(FORMAT);
+
+        // 現在のお使いの残り時間を取得
+        //jobTimeData.elaspedJobTime = gameManager.GetTapPointDetailCurrentJobTime(jobNo);
+        //Debug.Log(jobTimeData.elespedJobTime);
+
+        PlayerPrefsHelper.SaveSetObjectData(WORKING_JOB_SAVE_KEY + jobTimeData.jobNo.ToString(), jobTimeData);
+
+        //string json = JsonUtility.ToJson(workingJobTimeDatasList[jobNo]);
+        //PlayerPrefs.SetString(WORKING_JOB_SAVE_KEY + jobNo.ToString(), json);
+        //PlayerPrefs.Save();
+
+        string str = DateTime.Now.ToString(FORMAT);
+        Debug.Log($"仕事中 : セーブ時間 : {str}");
+        Debug.Log($"セーブ時のお使いの残り時間 : {jobTimeData.elaspedJobTime}");
+
+        DebugManager.instance.DisplayDebugDialog($"仕事中 : セーブ時間 : {str}");
+        DebugManager.instance.DisplayDebugDialog($"セーブ時の残り時間 : {jobTimeData.elaspedJobTime}");
+    }
+
+    /// <summary>
+    /// 行き先の数だけ、その行き先の JobTimeData があるかどうか確認し、ある場合にはロードして WorkingJobTimeDatasList に追加
+    /// </summary>
+    public void GetWorkingJobTimeDatasList(List<TapPointDetail> tapPointDetailsList) {
+        for (int i = 0; i < tapPointDetailsList.Count; i++) {
+            // 該当するお使いの番号でセーブされている時間データがあるかどうか確認
+            LoadOfflineJobTimeData(tapPointDetailsList[i].jobData.jobNo);
+        }
+    }
+
+    /// <summary>
+    /// お使いの開始時間のロード
+    /// </summary>
+    /// <param name="jobNo"></param>
+    public void LoadOfflineJobTimeData(int jobNo) {
+
+        // セーブデータがあるか確認
+        if (PlayerPrefsHelper.ExistsData(WORKING_JOB_SAVE_KEY + jobNo.ToString())) {            // PlayerPrefs.HasKey(WORKING_JOB_SAVE_KEY + jobNo.ToString())
+            // セーブデータがある場合
+            JobTimeData jobTimeData = PlayerPrefsHelper.LoadGetObjectData<JobTimeData>(WORKING_JOB_SAVE_KEY + jobNo.ToString());
+            AddWorkingJobTimeDatasList(jobTimeData);
+            //string json = PlayerPrefs.GetString(WORKING_JOB_SAVE_KEY + jobNo.ToString());
+            //workingJobTimeDatasList[jobNo] = JsonUtility.FromJson<JobTimeData>(json);
+
+            DateTime time = jobTimeData.GetDateTime();
+
+            string str = time.ToString(FORMAT);
+            Debug.Log($"仕事開始時 : セーブされていた時間 : {str}");
+            Debug.Log($"ロード時の残り時間 : {jobTimeData.elaspedJobTime}");
+
+            DebugManager.instance.DisplayDebugDialog($"仕事開始時 : セーブされていた時間 : {str}");
+            DebugManager.instance.DisplayDebugDialog($"ロード時の残り時間 : {jobTimeData.elaspedJobTime}");
+        }
     }
 
     /// <summary>
@@ -258,7 +317,7 @@ public class OfflineTimeManager : MonoBehaviour
         workingJobTimeDatasList.Remove(workingJobTimeDatasList.Find(x => x.jobNo == removeJobNo));
 
         // セーブデータを削除
-        PlayerPrefsJsonUtility.RemoveObjectData(WORKING_JOB_SAVE_KEY + removeJobNo);
+        PlayerPrefsHelper.RemoveObjectData(WORKING_JOB_SAVE_KEY + removeJobNo);
     }
 
     /// <summary>
@@ -270,7 +329,7 @@ public class OfflineTimeManager : MonoBehaviour
         workingJobTimeDatasList.Clear();
 
         // すべてのセーブデータを削除
-        PlayerPrefsJsonUtility.AllClearSaveData();
+        PlayerPrefsHelper.AllClearSaveData();
         DebugManager.instance.DisplayDebugDialog("すべてのセーブデータを削除 実行");
     }
 }
