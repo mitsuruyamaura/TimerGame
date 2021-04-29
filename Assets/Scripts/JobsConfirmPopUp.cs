@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UniRx;
 
 public class JobsConfirmPopUp : MonoBehaviour
 {
@@ -23,20 +24,22 @@ public class JobsConfirmPopUp : MonoBehaviour
 
     [SerializeField]
     private Text txtJobTitle;
-
-    private TapPointDetail tapPointDetail;
+    
+    private TapPointDetail tapPointDetail;　　　//　UniRX 使うとメソッドの引数のみで対応できるようになるので、不要になる
 
 
     // mi
     private GameManager gameManager;
+
+    public ReactiveProperty<bool> ButtonReactiveProperty = new ReactiveProperty<bool>(false);
 
 
     /// <summary>
     /// ポップアップを設定して開く
     /// </summary>
     /// <param name="gameManager"></param>
-    public void OpenPopUp(TapPointDetail tapPointDetail, GameManager gameManager) {
-        this.gameManager = gameManager;
+    public void OpenPopUp(TapPointDetail tapPointDetail) {   //, GameManager gameManager
+        //this.gameManager = gameManager;
         this.tapPointDetail = tapPointDetail;
 
         SwitchButtons(false);
@@ -101,14 +104,16 @@ public class JobsConfirmPopUp : MonoBehaviour
     private void ClosePopUp(bool isSubmit) {
         SwitchButtons(false);
 
+        ButtonReactiveProperty.Value = isSubmit;
+
         canvasGroup.DOFade(0f, 0.3f)
             .SetEase(Ease.Linear)
             .OnComplete(() => {
-                gameManager.JudgeSubmitJob(isSubmit, tapPointDetail);
+                //gameManager.JudgeSubmitJob(isSubmit, tapPointDetail);
 
                 //if (isSubmit) {
                 //    tapPointDetail.PrapareteJobs();
-                //}
+                //}'
 
                 Destroy(gameObject);
             });

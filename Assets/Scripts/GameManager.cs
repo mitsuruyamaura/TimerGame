@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using System;
 using System.Linq;
+using UniRx;
 
 public class GameManager : MonoBehaviour
 {
@@ -42,6 +43,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private JobDataSO jobDataSO;
 
+    [SerializeField]
+    private UIManager uiManager;
+
 
     void Start() {   // TODO コルーチンにする
         //OfflineTimeManager.instance.SetGameManager(this);
@@ -67,7 +71,7 @@ public class GameManager : MonoBehaviour
         OfflineTimeManager.instance.GetWorkingJobTimeDatasList(tapPointDetailsList);
 
         // 各 TapPointDetail の設定
-        JudgeCompleteJobs();        
+        JudgeCompleteJobs();
     }
 
     /// <summary>
@@ -77,6 +81,8 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < tapPointDetailsList.Count; i++) {
             JobData jobData = jobDataSO.jobDatasList.Find(x => x.jobNo == tapPointDetailsList[i].GetMyJobNo());
             tapPointDetailsList[i].SetUpTapPointDetail(this, jobData);
+            TapPointDetail tapPointDetail = tapPointDetailsList[i];
+            tapPointDetailsList[i].ButtonReactiveProperty.Where(x => x == true).Subscribe(_ => GenerateJobsConfirmPopUp(tapPointDetail));   // 参照できなくなるので、インスタンスを作成する
         }
     }
 
@@ -134,7 +140,9 @@ public class GameManager : MonoBehaviour
         JobsConfirmPopUp jobsConfirmPopUp = Instantiate(jobsConfirmPopUpPrefab, canvasTran, false);
 
         // TODO ポップアップに JobData を送る
-        jobsConfirmPopUp.OpenPopUp(tapPointDetail, this);
+        jobsConfirmPopUp.OpenPopUp(tapPointDetail);   // , this
+
+        jobsConfirmPopUp.ButtonReactiveProperty.Subscribe(x => JudgeSubmitJob(jobsConfirmPopUp.ButtonReactiveProperty.Value, tapPointDetail));
     }
 
     /// <summary>
@@ -163,7 +171,9 @@ public class GameManager : MonoBehaviour
                 // お使いの途中の場合には、残りのお使いの時間を設定
                 tapPointDetail.PrapareteJobs(remainingTime);
             }
-            
+            // お使い終了を監視
+            tapPointDetail.JobReactiveProperty.Where(x => x == false).Subscribe(x => GenerateCharaDetail(tapPointDetail));
+
             //StartCoroutine(tapPointDetail.WorkingJobs(tapPointDetail.jobData.jobTime));
         } else {
             Debug.Log("お使いには行かない");
@@ -180,7 +190,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("お使い用のキャラの生成");
         CharaDetail chara = Instantiate(charaDetailsPrefab, tapPointDetail.transform, false);
 
-        chara.SetUpCharaDetail(this, tapPointDetail);
+        //chara.SetUpCharaDetail();   // this, tapPointDetail
+        chara.ButtonReactiveProperty.Where(x => x == true).Subscribe(_ => ResultJobs(tapPointDetail));
     }
 
     /// <summary>

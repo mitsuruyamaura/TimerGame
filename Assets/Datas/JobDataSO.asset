@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jobDatasList:
   - jobNo: 0
-    jobTime: 5000
+    jobTime: 500
     jobTitle: "\u304A\u3070\u3042\u3061\u3083\u3093\u5BB6"
     jobType: 0
   - jobNo: 1
