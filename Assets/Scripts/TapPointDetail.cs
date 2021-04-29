@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UniRx;
 
 public class TapPointDetail : MonoBehaviour
 {
@@ -53,6 +54,10 @@ public class TapPointDetail : MonoBehaviour
 
     private GameManager gameManager;
 
+    public ReactiveProperty<bool> JobReactiveProperty = new ReactiveProperty<bool>();
+
+    public ReactiveProperty<bool> ButtonReactiveProperty = new ReactiveProperty<bool>(false);
+
 
     //void Start() {
     //    btnTapPoint.onClick.AddListener(OnClickTapPoint);
@@ -84,8 +89,10 @@ public class TapPointDetail : MonoBehaviour
         // タップアニメ
         transform.DOPunchScale(Vector3.one * 1.25f, 0.15f).SetEase(Ease.OutBounce);
 
+        ButtonReactiveProperty.Value = true;
+
         // TODO ポップアップ表示 このクラスの情報を渡す
-        gameManager.GenerateJobsConfirmPopUp(this);
+        //gameManager.GenerateJobsConfirmPopUp(this);
 
         //GameObject jobsComfirmPopUp = Instantiate(jobsComfirmPopUpPrefab, canvasTran, false);
         //jobsComfirmPopUp.GetComponent<JobsConfirmPopUp>().OpenPopUp(this);
@@ -97,6 +104,8 @@ public class TapPointDetail : MonoBehaviour
     public void PrapareteJobs(int remainingTime) {
         ChangeJobSprite();
         IsJobs = true;
+
+        JobReactiveProperty.Value = true;
 
         // お使い開始
         StartCoroutine(WorkingJobs(remainingTime));
@@ -136,7 +145,9 @@ public class TapPointDetail : MonoBehaviour
             // 残り時間が 0 以下になったら
             if (currentJobTime <= 0) {
                 KillTween();
-                IsJobs = false;                
+                IsJobs = false;
+
+                JobReactiveProperty.Value = false;
             }
             //yield return new WaitForSeconds(3.0f);
            
@@ -150,7 +161,7 @@ public class TapPointDetail : MonoBehaviour
         Debug.Log("お使い 終了");
 
         // TODO ゲームマネージャーでキャラ生成
-        gameManager.GenerateCharaDetail(this);
+        //gameManager.GenerateCharaDetail(this);
         //GenerateCharaDetail();
     }
 

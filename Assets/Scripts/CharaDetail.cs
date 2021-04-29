@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UniRx;
 
 public class CharaDetail : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class CharaDetail : MonoBehaviour
 
     private TapPointDetail tapPointDetail;
 
+    public ReactiveProperty<bool> ButtonReactiveProperty = new ReactiveProperty<bool>(false);
+
 
     //void Start() {
     //    btnChara.interactable = false;
@@ -36,21 +39,25 @@ public class CharaDetail : MonoBehaviour
     /// </summary>
     /// <param name="gameManager"></param>
     /// <param name="tapPointDetail"></param>
-    public void SetUpCharaDetail(GameManager gameManager, TapPointDetail tapPointDetail) {
-        this.gameManager = gameManager;
-        this.tapPointDetail = tapPointDetail;
+    /// 
+    //public void SetUpCharaDetail() {    // GameManager gameManager, TapPointDetail tapPointDetail
+    //this.gameManager = gameManager;
+    //this.tapPointDetail = tapPointDetail;
 
+    private void Start() {
         btnChara.interactable = false;
 
         btnChara.onClick.AddListener(OnClickChara);
-        btnChara.interactable = true;
+        btnChara.interactable = true;   
     }
 
     /// <summary>
     /// キャラをタップした際の処理
     /// </summary>
     private void OnClickChara() {
-        gameManager.ResultJobs(tapPointDetail);
+        ButtonReactiveProperty.Value = true;
+
+        //gameManager.ResultJobs(tapPointDetail);
 
         Debug.Log("お使いの結果を表示");
         Destroy(gameObject);
