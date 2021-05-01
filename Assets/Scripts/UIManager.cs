@@ -9,11 +9,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text txtPoint;
 
-    /// <summary>
-    /// 
-    /// </summary>
     void Start()
     {
+        // ReactivePropery ‚©‚ç’Ê’m‚ðŽó‚¯Žæ‚é(w“Ç)‘¤
         GameData.instance.PointReactiveProperty.Subscribe(x => txtPoint.text = GameData.instance.PointReactiveProperty.Value.ToString());
     }
 }
