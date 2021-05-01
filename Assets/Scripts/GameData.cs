@@ -45,7 +45,7 @@ public class GameData : MonoBehaviour
     /// <param name="amount"></param>
     public void CalulateTotalRewardPoint(int amount) {
         // 褒賞ポイントを計算して合計値算出
-        totalRewardPoint += amount;
+        //totalRewardPoint += amount;
 
         PointReactiveProperty.Value += amount;
     }
@@ -135,7 +135,7 @@ public class GameData : MonoBehaviour
     /// 褒賞ポイントのロード
     /// </summary>
     public void LoadTotalRewardPoint() {
-        totalRewardPoint = PlayerPrefsHelper.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
+        //totalRewardPoint = PlayerPrefsHelper.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
         PointReactiveProperty.Value = PlayerPrefsHelper.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
     }
 }

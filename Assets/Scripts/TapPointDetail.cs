@@ -33,26 +33,26 @@ public class TapPointDetail : MonoBehaviour
 
     private int currentJobTime;
 
-    private bool isJobs;
+    //private bool isJobs;
 
-    /// <summary>
-    /// isJobs 変数のプロパティ
-    /// </summary>
-    public bool IsJobs
-    {
-        set {
-            isJobs = value;
-        }
-        get {
-            return isJobs;
-        }
-    }
+    ///// <summary>
+    ///// isJobs 変数のプロパティ
+    ///// </summary>
+    //public bool IsJobs
+    //{
+    //    set {
+    //        isJobs = value;
+    //    }
+    //    get {
+    //        return isJobs;
+    //    }
+    //}
 
     [SerializeField, HideInInspector]
     private GameObject charaDetailPrefab;
 
 
-    private GameManager gameManager;
+    //private GameManager gameManager;
 
     public ReactiveProperty<bool> JobReactiveProperty = new ReactiveProperty<bool>();
 
@@ -67,9 +67,9 @@ public class TapPointDetail : MonoBehaviour
     /// TapPointDetail の設定　　=>　TODO UniRX にしたい
     /// </summary>
     /// <param name="gameManager"></param>
-    public void SetUpTapPointDetail(GameManager gameManager, JobData jobData) {
+    public void SetUpTapPointDetail(JobData jobData) {     // GameManager gameManager, 
         btnTapPoint.onClick.AddListener(OnClickTapPoint);
-        this.gameManager = gameManager;
+        //this.gameManager = gameManager;
 
         this.jobData = jobData;
     }
@@ -103,7 +103,7 @@ public class TapPointDetail : MonoBehaviour
     /// </summary>
     public void PrapareteJobs(int remainingTime) {
         ChangeJobSprite();
-        IsJobs = true;
+        //IsJobs = true;
 
         JobReactiveProperty.Value = true;
 
@@ -135,7 +135,7 @@ public class TapPointDetail : MonoBehaviour
         currentJobTime = normaJobTime;
 
         // お使いが終わるかを監視
-        while (IsJobs) {
+        while (JobReactiveProperty.Value) {   // IsJob
             // TODO 条件として時間を確認する
             currentJobTime--;
 
@@ -145,7 +145,7 @@ public class TapPointDetail : MonoBehaviour
             // 残り時間が 0 以下になったら
             if (currentJobTime <= 0) {
                 KillTween();
-                IsJobs = false;
+                //IsJobs = false;
 
                 JobReactiveProperty.Value = false;
             }

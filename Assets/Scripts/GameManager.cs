@@ -43,9 +43,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private JobDataSO jobDataSO;
 
-    [SerializeField]
-    private UIManager uiManager;
-
 
     void Start() {   // TODO コルーチンにする
         //OfflineTimeManager.instance.SetGameManager(this);
@@ -80,9 +77,16 @@ public class GameManager : MonoBehaviour
     private void SetUpJobDatasToTapPointDetails() {
         for (int i = 0; i < tapPointDetailsList.Count; i++) {
             JobData jobData = jobDataSO.jobDatasList.Find(x => x.jobNo == tapPointDetailsList[i].GetMyJobNo());
-            tapPointDetailsList[i].SetUpTapPointDetail(this, jobData);
+            tapPointDetailsList[i].SetUpTapPointDetail(jobData);     //  this, 
             TapPointDetail tapPointDetail = tapPointDetailsList[i];
-            tapPointDetailsList[i].ButtonReactiveProperty.Where(x => x == true).Subscribe(_ => GenerateJobsConfirmPopUp(tapPointDetail));   // 参照できなくなるので、インスタンスを作成する
+
+            // お使い開始を監視
+            tapPointDetailsList[i].ButtonReactiveProperty.DistinctUntilChanged().Where(x => x == true).Subscribe(_ => GenerateJobsConfirmPopUp(tapPointDetail));   // 参照できなくなるので、インスタンスを作成する
+
+            tapPointDetailsList[i].JobReactiveProperty.Value = true;
+
+            // お使い終了を監視
+            tapPointDetailsList[i].JobReactiveProperty.DistinctUntilChanged().Where(x => x == false).Subscribe(x => GenerateCharaDetail(tapPointDetail));
         }
     }
 
@@ -134,6 +138,9 @@ public class GameManager : MonoBehaviour
     /// <param name="tapPointDetail"></param>
     public void GenerateJobsConfirmPopUp(TapPointDetail tapPointDetail) {
 
+        tapPointDetail.ButtonReactiveProperty.Value = false;
+
+
         // TODO ポップアップをインスタンスする 
         Debug.Log("お使い確認用のポップアップを開く");
 
@@ -142,14 +149,20 @@ public class GameManager : MonoBehaviour
         // TODO ポップアップに JobData を送る
         jobsConfirmPopUp.OpenPopUp(tapPointDetail);   // , this
 
-        jobsConfirmPopUp.ButtonReactiveProperty.Subscribe(x => JudgeSubmitJob(jobsConfirmPopUp.ButtonReactiveProperty.Value, tapPointDetail));
+        jobsConfirmPopUp.ButtonReactiveProperty.Where(x => x == true).Subscribe(x => JudgeSubmitJob(jobsConfirmPopUp.ButtonReactiveProperty.Value, tapPointDetail, -1, jobsConfirmPopUp));
     }
 
     /// <summary>
     /// お使いを引き受けたか確認
     /// </summary>
     /// <param name="isSubmit"></param>
-    public void JudgeSubmitJob(bool isSubmit, TapPointDetail tapPointDetail, int remainingTime = -1) {
+    public void JudgeSubmitJob(bool isSubmit, TapPointDetail tapPointDetail, int remainingTime = -1, JobsConfirmPopUp jobsConfirmPopUp = null) {
+
+        if (jobsConfirmPopUp != null) {
+            jobsConfirmPopUp.ButtonReactiveProperty.Subscribe().Dispose();
+            Debug.Log("Dispose");
+        }
+
         if (isSubmit) {
             // ボタンの画像を変更
             //tapPointDetail.ChangeJobSprite();
@@ -171,8 +184,12 @@ public class GameManager : MonoBehaviour
                 // お使いの途中の場合には、残りのお使いの時間を設定
                 tapPointDetail.PrapareteJobs(remainingTime);
             }
+
+            // TapPointDetail の ButtonReactivePropery の監視を終了
+            //tapPointDetail.ButtonReactiveProperty.Subscribe().Dispose();  // Subscribe で指定すると、ReactivePropery は生きている。Subscribe ではなく、ReactivePropery で指定すると、丸ごと止まる
+
             // お使い終了を監視
-            tapPointDetail.JobReactiveProperty.Where(x => x == false).Subscribe(x => GenerateCharaDetail(tapPointDetail));
+            //tapPointDetail.JobReactiveProperty.DistinctUntilChanged().Where(x => x == false).Subscribe(x => GenerateCharaDetail(tapPointDetail));
 
             //StartCoroutine(tapPointDetail.WorkingJobs(tapPointDetail.jobData.jobTime));
         } else {
@@ -191,7 +208,7 @@ public class GameManager : MonoBehaviour
         CharaDetail chara = Instantiate(charaDetailsPrefab, tapPointDetail.transform, false);
 
         //chara.SetUpCharaDetail();   // this, tapPointDetail
-        chara.ButtonReactiveProperty.Where(x => x == true).Subscribe(_ => ResultJobs(tapPointDetail));
+        chara.ButtonReactiveProperty.Where(x => x == true).Subscribe(_ => ResultJobs(tapPointDetail)).AddTo(chara.gameObject);
     }
 
     /// <summary>
@@ -269,10 +286,10 @@ public class GameManager : MonoBehaviour
         Instantiate(rewardPopUpPrefab, canvasTran, false).SetUpRewardPopUp(rewardData);
 
         // TapPoint の状態を再度押せる状態に戻す
-        tapPointDetail.SwtichActivateTapPoint(true);
+        tapPointDetail.SwtichActivateTapPoint(true);     //　不要
 
         // 画像を元の画像に戻す
-        tapPointDetail.ReturnDefaultState();
+        tapPointDetail.ReturnDefaultState();             //　不要
 
         // TODO お使いのリストとセーブデータを削除　キャラをタップしてから消す
         OfflineTimeManager.instance.RemoveWorkingJobTimeDatasList(tapPointDetail.jobData.jobNo);
