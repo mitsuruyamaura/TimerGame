@@ -62,6 +62,9 @@ public class CharaDetail : MonoBehaviour
         Debug.Log("‚¨Žg‚¢‚ÌŒ‹‰Ê‚ð•\Ž¦");
         Destroy(gameObject);
     }
+    private void OnDestroy() {
+        Debug.Log("ƒLƒƒƒ‰ ”jŠüŠ®—¹");
+    }
 
     // mi
 
