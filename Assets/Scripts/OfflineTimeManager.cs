@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Cysharp.Threading.Tasks;
 
 public class OfflineTimeManager : MonoBehaviour
 {
@@ -111,11 +112,20 @@ public class OfflineTimeManager : MonoBehaviour
     /// <summary>
     /// ゲームが終了したときに自動的に呼ばれる
     /// </summary>
-    private void OnApplicationQuit() {
+    private async UniTask OnApplicationQuit() {　　　　　　//　async UniTask に変更
+
+        // PlayFab にゲーム終了時の時間を保存
+        await OnlineTimeManager.UpdateLogOffTimeAsync();
+
+
+
+
         SaveOfflineDateTime();
         Debug.Log("ゲーム中断。時間のセーブ完了");
 
         DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
+
+        
 
         // お使い中のデータがある場合、お使いの時間データをセーブ
         for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
@@ -199,7 +209,8 @@ public class OfflineTimeManager : MonoBehaviour
         //string str = DateTime.Now.ToString(FORMAT);
         Debug.Log($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
 
-        DebugManager.instance.DisplayDebugDialog($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
+        // ゲーム終了しているので、画面で見れないため不要
+        //DebugManager.instance.DisplayDebugDialog($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
     }
 
     /// <summary>
