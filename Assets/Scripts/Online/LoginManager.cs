@@ -77,10 +77,10 @@ public static class LoginManager {　　//　ゲーム実行時にインスタンスが自動的に１
             ? await CreateNewUserAsync() : await LoadUserAsync(userId);
 
         // プレイヤーデータの作成と更新
-        await CreateUserDataAsync();
+        //await CreateUserDataAsync();
 
-        // TOTO PlayFab のデータを自動で取得する設定にしているので、取得したデータをローカルにキャッシュ
-
+        // PlayFab のデータを自動で取得する設定にしているので、取得したデータをローカルにキャッシュする
+        UpdateLocalCacheAsync(loginResult);
     }
 
     /// <summary>
@@ -218,5 +218,31 @@ public static class LoginManager {　　//　ゲーム実行時にインスタンスが自動的に１
         await UserDataManager.UpdateUserDataByJsonAsync(key);   // PlayFab に Json 形式にした User クラスの情報を登録します
 
         Debug.Log("ユーザーデータ 登録完了");
+    }
+
+    /// <summary>
+    /// PlayFab から取得したデータ群をローカル(端末)にキャッシュ
+    /// </summary>
+    /// <param name="loginResult"></param>
+    /// <returns></returns>
+
+    public static void UpdateLocalCacheAsync(LoginResult loginResult) {
+
+        // TODO カタログ類の初期化。他のインスタンスの初期化にも必要なので最初に行う
+
+
+        // TODO タイトルデータの取得
+
+
+        // ユーザーデータの取得
+        UserDataManager.SyncPlayFabToClient(loginResult.InfoResultPayload.UserData);
+
+        // ユーザー名などの取得
+        PlayerPlofileManager.SyncPlayFabToClient(loginResult.InfoResultPayload.PlayerProfile, loginResult.InfoResultPayload.PlayerStatistics);
+
+        // TODO 他の初期化処理を追加
+
+
+        Debug.Log("各種データのキャッシュ完了");
     }
 }
