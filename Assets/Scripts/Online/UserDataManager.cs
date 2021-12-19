@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using PlayFab;
 using PlayFab.ClientModels;
 using Newtonsoft.Json;
+using System;
 
 
 public static class UserDataManager {
@@ -12,6 +13,9 @@ public static class UserDataManager {
     // TODO Level などの情報を持たせる
 
     public static User User { get; set; }
+
+    private const string FORMAT = "yyyy/MM/dd HH:mm:ss";
+
 
     /// <summary>
     /// プレイヤーデータ内の作成と更新(プレイヤーデータ(タイトル)の Key に１つだけ値を登録する方法)
@@ -99,6 +103,15 @@ public static class UserDataManager {
             ? JsonConvert.DeserializeObject<User>(user.Value) : User.Create();
 
         Debug.Log("PlayFab のユーザーデータを取得");
+
+        // ログオフした時間の取得
+        if (userData.TryGetValue("LogOffTime", out var logOffTime)) {
+
+            GameData.instance.loadDateTime = DateTime.ParseExact(logOffTime.Value, FORMAT, null);
+            Debug.Log($"前回ログオフした時間 : { logOffTime.Value }");
+        }
+
+
 
         // TODO 他にも処理があれば追加
 
