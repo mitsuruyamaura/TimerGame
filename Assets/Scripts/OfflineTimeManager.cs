@@ -9,6 +9,8 @@ public class OfflineTimeManager : MonoBehaviour
     public static OfflineTimeManager instance;
 
     private DateTime loadDateTime = new DateTime();   // 前回ゲームを止めた時にセーブしている時間
+    public DateTime LoadDateTime { get; set; }
+
     private int elaspedTime;    // 経過時間
 
     private GameManager gameManager;
@@ -70,10 +72,10 @@ public class OfflineTimeManager : MonoBehaviour
         }
 
         // セーブデータのロード
-        LoadOfflineDateTime();
+        //LoadOfflineDateTime();
 
         // オフラインでの経過時間を計算
-        CalculateOfflineDateTimeElasped(loadDateTime);
+        //CalculateOfflineDateTimeElasped(loadDateTime);
 
         // TODO お使いのデータのロード
         //LoadOfflineJobTimeData(0);
@@ -117,7 +119,10 @@ public class OfflineTimeManager : MonoBehaviour
         // PlayFab にゲーム終了時の時間を保存
         await OnlineTimeManager.UpdateLogOffTimeAsync();
 
-
+        // PlayFab に仕事の残り時間を保存
+        if (workingJobTimeDatasList.Count > 0) {
+            await OnlineTimeManager.UpdateJobTimeAsync(workingJobTimeDatasList);
+        }
 
 
         SaveOfflineDateTime();
@@ -293,6 +298,8 @@ public class OfflineTimeManager : MonoBehaviour
             // 該当するお使いの番号でセーブされている時間データがあるかどうか確認
             LoadOfflineJobTimeData(tapPointDetailsList[i].jobData.jobNo);
         }
+
+        Debug.Log("お使いのデータを取得");
     }
 
     /// <summary>
@@ -323,12 +330,15 @@ public class OfflineTimeManager : MonoBehaviour
     /// <summary>
     /// お使いの終了した JobTimeData を削除し、セーブデータを削除
     /// </summary>
-    public void RemoveWorkingJobTimeDatasList(int removeJobNo) {
+    public async void RemoveWorkingJobTimeDatasList(int removeJobNo) {
         // リストから削除
         workingJobTimeDatasList.Remove(workingJobTimeDatasList.Find(x => x.jobNo == removeJobNo));
 
         // セーブデータを削除
         PlayerPrefsHelper.RemoveObjectData(WORKING_JOB_SAVE_KEY + removeJobNo);
+
+        // PlayFab のお使いのデータを更新
+        await OnlineTimeManager.UpdateJobTimeAsync(workingJobTimeDatasList);
     }
 
     /// <summary>

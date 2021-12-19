@@ -44,8 +44,10 @@ public class GameManager : MonoBehaviour
     private JobDataSO jobDataSO;
 
 
-    void Start() {   // TODO コルーチンにする
+    IEnumerator Start() {   // TODO コルーチンにする
         //OfflineTimeManager.instance.SetGameManager(this);
+
+        yield return new WaitUntil(() => LoginManager.isSetup);
 
         // 褒賞データの最大数を登録
         GameData.instance.GetMaxRewardDataCount(rewardDataSO.rewardDatasList.Count);
@@ -121,7 +123,7 @@ public class GameManager : MonoBehaviour
             // TODO ロードしたデータを照合して、お使い中の場合には非表示にする
             if (isJobEnd) {
                 // TODO お使いのリストとセーブデータを削除　キャラをタップしてから消す
-                OfflineTimeManager.instance.RemoveWorkingJobTimeDatasList(jobTime.jobNo);
+                //OfflineTimeManager.instance.RemoveWorkingJobTimeDatasList(jobTime.jobNo);
 
                 // お使い終了。キャラ生成して結果を確認
                 GenerateCharaDetail(tapPointDetailsList[i]);

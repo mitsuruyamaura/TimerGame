@@ -107,10 +107,21 @@ public static class UserDataManager {
         // ログオフした時間の取得
         if (userData.TryGetValue("LogOffTime", out var logOffTime)) {
 
-            GameData.instance.loadDateTime = DateTime.ParseExact(logOffTime.Value, FORMAT, null);
+            OfflineTimeManager.instance.LoadDateTime = DateTime.ParseExact(logOffTime.Value, FORMAT, null);
             Debug.Log($"前回ログオフした時間 : { logOffTime.Value }");
         }
 
+        // 仕事の情報を取得
+        if (userData.TryGetValue("JobTimes", out var jobTimes)) {
+            OfflineTimeManager.instance.workingJobTimeDatasList = JsonConvert.DeserializeObject<List<OfflineTimeManager.JobTimeData>>(jobTimes.Value);
+        } else {
+            Debug.Log("仕事のデータなし");
+        }
+
+        Debug.Log("PlayFab の仕事のデータを取得");
+
+        // オンラインで経過した時間を計算
+        //OfflineTimeManager.instance.CalculateOfflineDateTimeElasped(OfflineTimeManager.instance.LoadDateTime);
 
 
         // TODO 他にも処理があれば追加
