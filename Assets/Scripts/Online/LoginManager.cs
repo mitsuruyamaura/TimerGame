@@ -36,18 +36,23 @@ public static class LoginManager {　　//　ゲーム実行時にインスタンスが自動的に１
         Debug.Log("TitleID 設定: " + PlayFabSettings.staticSettings.TitleId);
     }
 
+    public static bool isSetup;
+
     /// <summary>
     /// 初期化処理
     /// </summary>
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static async UniTaskVoid InitializeAsync() {
 
-        Debug.Log("初期化開始");
+        //Debug.Log("初期化開始");
+        isSetup = false;
 
         // PlayFab へのログイン準備とログイン
         await PrepareLoginPlayPab();
 
         Debug.Log("初期化完了");
+
+        isSetup = true;
     }
 
     /// <summary>

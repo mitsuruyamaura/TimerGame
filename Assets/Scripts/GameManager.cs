@@ -44,8 +44,10 @@ public class GameManager : MonoBehaviour
     private JobDataSO jobDataSO;
 
 
-    void Start() {   // TODO コルーチンにする
+    IEnumerator Start() {   // TODO コルーチンにする
         //OfflineTimeManager.instance.SetGameManager(this);
+
+        yield return new WaitUntil(() => LoginManager.isSetup);
 
         // 褒賞データの最大数を登録
         GameData.instance.GetMaxRewardDataCount(rewardDataSO.rewardDatasList.Count);
@@ -64,8 +66,8 @@ public class GameManager : MonoBehaviour
         // 各 TapPointDetail に JobData を設定
         SetUpJobDatasToTapPointDetails();
 
-        // お使いのデータのロード
-        OfflineTimeManager.instance.GetWorkingJobTimeDatasList(tapPointDetailsList);
+        // お使いのデータのロード(Playfab から取得済なので不要)
+        //OfflineTimeManager.instance.GetWorkingJobTimeDatasList(tapPointDetailsList);
 
         // 各 TapPointDetail の設定
         JudgeCompleteJobs();
@@ -91,13 +93,6 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// セーブされているお使いの時間データを
-    /// </summary>
-    private void LoadJobTimeDatas() {
-
-    }
-
-    /// <summary>
     /// 各 TapPointDetail のお使いの状況に合わせて、仕事中か仕事終了かを判断してキャラを生成するか、お使いを再開するか決定
     /// </summary>
     private void JudgeCompleteJobs() {
@@ -115,13 +110,13 @@ public class GameManager : MonoBehaviour
             }
 
             // お使いの状態と残り時間を取得
-            (bool isJobEnd, int remainingTime) = JudgeJobsEnd(jobTime);
+            (bool isJobEnd, float remainingTime) = JudgeJobsEnd(jobTime);
             Debug.Log(remainingTime);
 
             // TODO ロードしたデータを照合して、お使い中の場合には非表示にする
             if (isJobEnd) {
                 // TODO お使いのリストとセーブデータを削除　キャラをタップしてから消す
-                OfflineTimeManager.instance.RemoveWorkingJobTimeDatasList(jobTime.jobNo);
+                //OfflineTimeManager.instance.RemoveWorkingJobTimeDatasList(jobTime.jobNo);
 
                 // お使い終了。キャラ生成して結果を確認
                 GenerateCharaDetail(tapPointDetailsList[i]);
@@ -156,7 +151,7 @@ public class GameManager : MonoBehaviour
     /// お使いを引き受けたか確認
     /// </summary>
     /// <param name="isSubmit"></param>
-    public void JudgeSubmitJob(bool isSubmit, TapPointDetail tapPointDetail, int remainingTime = -1, JobsConfirmPopUp jobsConfirmPopUp = null) {
+    public void JudgeSubmitJob(bool isSubmit, TapPointDetail tapPointDetail, float remainingTime = -1, JobsConfirmPopUp jobsConfirmPopUp = null) {
 
         if (jobsConfirmPopUp != null) {
             jobsConfirmPopUp.ButtonReactiveProperty.Subscribe().Dispose();
@@ -175,6 +170,9 @@ public class GameManager : MonoBehaviour
 
             // 仕事開始時間のセーブ
             OfflineTimeManager.instance.SaveWorkingJobTimeData(tapPointDetail.jobData.jobNo);
+
+
+
 
             // お使いの準備
             if (remainingTime == -1) {
@@ -216,7 +214,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="jobTimeData"></param>
     /// <returns></returns>
-    private (bool, int) JudgeJobsEnd(OfflineTimeManager.JobTimeData jobTimeData) {
+    private (bool, float) JudgeJobsEnd(OfflineTimeManager.JobTimeData jobTimeData) {
 
         // 目標となる時間を TimeSpan にする
         //TimeSpan addTime = new TimeSpan(0, 0, tapPointDetail.jobData.jobTime, 0);
@@ -235,12 +233,12 @@ public class GameManager : MonoBehaviour
         //// 差分値を float 型に変換
         //int elaspedTime = (int)Math.Round(timeElasped.TotalSeconds, 0, MidpointRounding.ToEven);
 
-        // ゲーム起動時の時間とお使いを開始した時間との差分値を算出
-        int elaspedTime = OfflineTimeManager.instance.CalculateOfflineDateTimeElasped(jobTimeData.GetDateTime()) * 100;
-        Debug.Log("お使い時間の差分 : " + elaspedTime / 100 + " : 秒");
+        // ゲーム起動時の時間とお使いを開始した時間との差分値を算出 // 厳密には 秒 ではない
+        float elaspedTime = OfflineTimeManager.instance.CalculateOfflineDateTimeElasped(jobTimeData.GetDateTime()) / 2;// * 100;
+        Debug.Log("お使い時間の差分 : " + elaspedTime + " : 秒");  //   elaspedTime / 100 
 
         // 残り時間算出
-        int remainingTime = jobTimeData.elaspedJobTime;
+        float remainingTime = jobTimeData.elaspedJobTime;
         Debug.Log("remainingTime : " + remainingTime);
 
         // 経過時間がお使いにかかる時間よりも同じか多いなら
