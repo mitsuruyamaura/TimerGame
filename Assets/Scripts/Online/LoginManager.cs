@@ -8,6 +8,24 @@ using Cysharp.Threading.Tasks;
 public static class LoginManager {　　//　ゲーム実行時にインスタンスが自動的に１つだけ生成される
 
     /// <summary>
+    /// ログインと同時に PlayFab から取得する情報の設定用クラスである GetPlayerCombinedInfoRequestParams のプロパティ。
+    /// GetPlayerCombinedInfoRequestParams クラスで設定した値が InfoRequestParameters の設定値になり、true にしてある項目で各情報が自動的に取得できるようになる
+    /// 各パラメータの初期値はすべて false
+    /// 取得が多くなるほどログイン時間がかかり、メモリを消費するので気を付ける
+    /// 取得結果は InfoResultPayLoad に入っている。false のものはすべて null になる
+    /// </summary>
+    public static GetPlayerCombinedInfoRequestParams CombinedInfoRequestParams { get; }
+        = new GetPlayerCombinedInfoRequestParams {
+            GetUserAccountInfo = true,
+            GetPlayerProfile = true,
+            GetTitleData = true,
+            GetUserData = true,
+            GetUserInventory = true,
+            GetUserVirtualCurrency = true,
+            GetPlayerStatistics = true
+        };
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     static LoginManager() {
@@ -54,5 +72,52 @@ public static class LoginManager {　　//　ゲーム実行時にインスタンスが自動的に１
             : result.Error.GenerateErrorReport();                             // Error が null 以外の場合はエラーが発生しているので、レポート作成
 
         Debug.Log(message);
+    }
+
+    /// <summary>
+    /// Email とパスワードでログイン(アカウント回復用)
+    /// </summary>
+    /// <param name="email"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    public static async UniTask<(bool, string)> LoginEmailAndPasswordAsync(string email, string password) {
+
+        // Email によるログインリクエストの作成
+        var request = new LoginWithEmailAddressRequest {
+            Email = email,
+            Password = password,
+            InfoRequestParameters = CombinedInfoRequestParams
+        };
+
+        // PlayFab にログイン
+        var response = await PlayFabClientAPI.LoginWithEmailAddressAsync(request);
+
+        // エラーハンドリング
+        if (response.Error != null) {
+            switch (response.Error.Error) {
+                case PlayFabErrorCode.InvalidParams:
+                case PlayFabErrorCode.InvalidEmailOrPassword:
+                case PlayFabErrorCode.AccountNotFound:
+                    Debug.Log("メールアドレスかパスワードが正しくありません");
+                    break;
+                default:
+                    Debug.Log(response.Error.GenerateErrorReport());
+                    break;
+            }
+
+            return (false, "メールアドレスかパスワードが正しくありません");
+        }
+
+        // PlayerPrefas を初期化して、ログイン結果の UserId を登録し直す
+        PlayerPrefs.DeleteAll();
+
+        // 新しく PlayFab から UserId を取得
+        // InfoResultPayload はクライアントプロフィールオプション(InfoRequestParameters)で許可されてないと null になる
+        PlayerPrefsManager.UserId = response.Result.InfoResultPayload.AccountInfo.CustomIdInfo.CustomId;
+
+        // Email でログインしたことを記録する
+        PlayerPrefsManager.IsLoginEmailAdress = true;
+
+        return (true, "Email によるログインが完了しました。");
     }
 }
