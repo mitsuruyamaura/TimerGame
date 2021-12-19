@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
             tapPointDetailsList[i].JobReactiveProperty.Value = true;
 
             // お使い終了を監視
-            tapPointDetailsList[i].JobReactiveProperty.DistinctUntilChanged().Where(x => x == false).Subscribe(x => GenerateCharaDetail(tapPointDetail));
+            tapPointDetailsList[i].JobReactiveProperty.DistinctUntilChanged().Where(x => x == false).Subscribe(_ => GenerateCharaDetail(tapPointDetail));
         }
     }
 
@@ -189,7 +189,7 @@ public class GameManager : MonoBehaviour
             //tapPointDetail.ButtonReactiveProperty.Subscribe().Dispose();  // Subscribe で指定すると、ReactivePropery は生きている。Subscribe ではなく、ReactivePropery で指定すると、丸ごと止まる
 
             // お使い終了を監視
-            //tapPointDetail.JobReactiveProperty.DistinctUntilChanged().Where(x => x == false).Subscribe(x => GenerateCharaDetail(tapPointDetail));
+            //tapPointDetail.JobReactiveProperty.DistinctUntilChanged().Where(x => x == false).Subscribe(_ => GenerateCharaDetail(tapPointDetail));
 
             //StartCoroutine(tapPointDetail.WorkingJobs(tapPointDetail.jobData.jobTime));
         } else {
