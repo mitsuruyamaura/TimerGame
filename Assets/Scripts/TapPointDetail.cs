@@ -31,7 +31,7 @@ public class TapPointDetail : MonoBehaviour
 
     private Tween tween;
 
-    private int currentJobTime;
+    private float currentJobTime;
 
     //private bool isJobs;
 
@@ -101,7 +101,7 @@ public class TapPointDetail : MonoBehaviour
     /// <summary>
     /// お使いの準備
     /// </summary>
-    public void PrapareteJobs(int remainingTime) {
+    public void PrapareteJobs(float remainingTime) {
         ChangeJobSprite();
         //IsJobs = true;
 
@@ -129,18 +129,21 @@ public class TapPointDetail : MonoBehaviour
     /// </summary>
     /// <param name="normaJobTime"></param>
     /// <returns></returns>
-    public IEnumerator WorkingJobs(int normaJobTime) {
+    public IEnumerator WorkingJobs(float normaJobTime) {
 
         // 残っているお使いの時間を設定
         currentJobTime = normaJobTime;
 
         // お使いが終わるかを監視
         while (JobReactiveProperty.Value) {   // IsJob
+
             // TODO 条件として時間を確認する
-            currentJobTime--;
+            //currentJobTime--;
+
+            currentJobTime -= Time.deltaTime;
 
             // 残り時間を更新
-            OfflineTimeManager.instance.UpdateCurrentJobTime(jobData.jobNo, currentJobTime);
+            OfflineTimeManager.instance.UpdateCurrentJobTime(jobData.jobNo, (int)currentJobTime);
 
             // 残り時間が 0 以下になったら
             if (currentJobTime <= 0) {
@@ -209,7 +212,7 @@ public class TapPointDetail : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     public int GetCurrentJobTime() {
-        return currentJobTime;
+        return (int)currentJobTime;
     }
 
     /// <summary>
