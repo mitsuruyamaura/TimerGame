@@ -30,13 +30,6 @@ public class GameData : MonoBehaviour
 
     public ReactiveProperty<int> PointReactiveProperty = new ReactiveProperty<int>(0);
 
-    [Header("お使いの時間データのリスト")]
-    public List<OfflineTimeManager.JobTimeData> workingJobTimeDatasList = new List<OfflineTimeManager.JobTimeData>();
-
-    public DateTime loadDateTime = new DateTime();   // 前回ゲームを止めた時にセーブしている時間
-    public int elaspedTime;    // 経過時間
-
-
 
     private void Awake() {
         if(instance == null) {

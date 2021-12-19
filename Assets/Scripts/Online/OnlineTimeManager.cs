@@ -40,4 +40,29 @@ public class OnlineTimeManager : MonoBehaviour
         Debug.Log("ログオフ時の時刻セーブ完了");
         return true;
     }
+
+    /// <summary>
+    /// お使いの時間のセーブ
+    /// お使い開始時とゲーム終了時にセーブ
+    /// </summary>
+    /// <param name="workingJobTimeDatasList"></param>
+    /// <returns></returns>
+    public static async UniTask UpdateJobTimeAsync(List<OfflineTimeManager.JobTimeData> workingJobTimeDatasList) {
+
+        string json = JsonConvert.SerializeObject(workingJobTimeDatasList);
+
+        var request = new UpdateUserDataRequest {
+
+            Data = new Dictionary<string, string> { { "JobTimes", json } }
+        };
+
+        var response = await PlayFabClientAPI.UpdateUserDataAsync(request);
+
+        if (response.Error != null) {
+            Debug.Log("エラー");
+            return;
+        }
+
+        Debug.Log("仕事のデータ セーブ完了");
+    }
 }
