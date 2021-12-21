@@ -271,6 +271,8 @@ MonoBehaviour:
   totalRewardPoint: 0
   PointReactiveProperty:
     value: 0
+  jobMasterDatas: []
+  jobTypeRewardRatesDatas: []
 --- !u!4 &80634935
 Transform:
   m_ObjectHideFlags: 0

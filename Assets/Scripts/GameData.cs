@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using System.Linq;
 
 public class GameData : MonoBehaviour
 {
@@ -29,6 +30,11 @@ public class GameData : MonoBehaviour
     private int maxRewardDataCount;
 
     public ReactiveProperty<int> PointReactiveProperty = new ReactiveProperty<int>(0);
+
+
+    public JobData[] jobMasterDatas;
+
+    public JobTypeRewardRatesData[] jobTypeRewardRatesDatas;
 
 
     private void Awake() {
@@ -138,5 +144,23 @@ public class GameData : MonoBehaviour
     public void LoadTotalRewardPoint() {
         //totalRewardPoint = PlayerPrefsHelper.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
         PointReactiveProperty.Value = PlayerPrefsHelper.LoadIntData(TOTAL_REWARD_POINT_SAVE_KEY);
+    }
+
+    /// <summary>
+    /// タイトルデータからキャッシュした内容の確認用
+    /// </summary>
+    public void SetMasterDatas() {
+
+        jobMasterDatas = new JobData[TitleDataManager.JobMasterData.Count];
+        jobMasterDatas = TitleDataManager.JobMasterData.Select(x => x.Value).ToArray();
+        Debug.Log(jobMasterDatas[0].jobTime);
+
+        jobTypeRewardRatesDatas = new JobTypeRewardRatesData[TitleDataManager.JobTypeRewardRatesMasterData.Count];
+        jobTypeRewardRatesDatas = TitleDataManager.JobTypeRewardRatesMasterData.Select(x => x.Value).ToArray();
+        Debug.Log(jobTypeRewardRatesDatas[0].jobType.ToString());
+
+
+        // TODO　キャッシュするマスターデータが増えたら、ここに処理を追加する
+
     }
 }
