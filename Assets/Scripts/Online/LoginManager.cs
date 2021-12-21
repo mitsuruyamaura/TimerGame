@@ -236,7 +236,8 @@ public static class LoginManager {　　//　ゲーム実行時にインスタンスが自動的に１
         // TODO カタログ類の初期化。他のインスタンスの初期化にも必要なので最初に行う
 
 
-        // TODO タイトルデータの取得
+        // タイトルデータの取得
+        TitleDataManager.SyncPlayFabToClient(loginResult.InfoResultPayload.TitleData);
 
 
         // ユーザーデータの取得
