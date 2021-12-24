@@ -22,14 +22,10 @@ MonoBehaviour:
     jobTitle: "\u4E18\u306E\u6559\u4F1A"
     jobType: 0
   - jobNo: 2
-    jobTime: 30000
-    jobTitle: "\u5192\u967A\u8005\u306E\u9152\u5834"
-    jobType: 1
-  - jobNo: 3
     jobTime: 100000
     jobTitle: "\u6D77\u5CB8\u6CBF\u3044\u306E\u7D75\u63CF\u304D\u306E\u5BB6"
     jobType: 1
-  - jobNo: 4
+  - jobNo: 3
     jobTime: 200000
     jobTitle: "\u8857\u306F\u305A\u308C\u306E\u68EE\u5965\u306E\u96A0\u8005\u306E\u5BB6"
     jobType: 2

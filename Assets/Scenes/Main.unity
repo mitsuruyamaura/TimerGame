@@ -273,6 +273,8 @@ MonoBehaviour:
     value: 0
   jobMasterDatas: []
   jobTypeRewardRatesDatas: []
+  rewardDatas: []
+  isOffline: 1
 --- !u!4 &80634935
 Transform:
   m_ObjectHideFlags: 0
@@ -1176,36 +1178,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1136154254
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1136154255}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1136154255
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1136154254}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1258564708
 GameObject:
   m_ObjectHideFlags: 0
@@ -1634,7 +1606,7 @@ MonoBehaviour:
   charaDetailsList: []
   rewardPopUpPrefab: {fileID: 5082059992489857053, guid: 66b79b1dd3bdc9140a79cd98213660c1, type: 3}
   rewardDataSO: {fileID: 11400000, guid: 5995efa330bbdd04283dfd19de557f51, type: 2}
-  JobTypeRewardRatesDataSO: {fileID: 11400000, guid: de986d0172ec09d4a9834c204a9fc132, type: 2}
+  jobTypeRewardRatesDataSO: {fileID: 11400000, guid: de986d0172ec09d4a9834c204a9fc132, type: 2}
   btnAlbum: {fileID: 1993179552}
   AlbumPopUpPrefab: {fileID: 6902920438741256364, guid: 9138909cfcfe6b34fa445108641dd97c, type: 3}
   jobDataSO: {fileID: 11400000, guid: 4038889f2fbd3eb4da96329abe07f464, type: 2}
