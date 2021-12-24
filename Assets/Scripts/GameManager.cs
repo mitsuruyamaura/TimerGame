@@ -63,6 +63,19 @@ public class GameManager : MonoBehaviour
                 jobDataSO.jobDatasList = TitleDataManager.JobMasterData.Select(x => x.Value).ToList();
 
                 jobTypeRewardRatesDataSO.jobTypeRewardRatesDataList = TitleDataManager.JobTypeRewardRatesMasterData.Select(x => x.Value).ToList();
+
+                // 画像データのロード(PlayFab に画像を置くと課金対象になるため、ローカルの画像をキャッシュして使う)
+                Sprite[] sprites = Resources.LoadAll<Sprite>("sozai_image_168425");
+
+                // RewardData に各画像を代入
+                int no = 0;
+                foreach(KeyValuePair<string, RewardData> rewardData in TitleDataManager.RewardMasterData) {
+                    rewardData.Value.spriteReward = sprites[no];
+                    GameData.instance.rewardDatas[no].spriteReward = sprites[no];
+                    no++;
+                }
+
+                rewardDataSO.rewardDatasList = TitleDataManager.RewardMasterData.Select(x => x.Value).ToList();
             }
         }
 

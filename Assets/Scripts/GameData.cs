@@ -36,6 +36,8 @@ public class GameData : MonoBehaviour
 
     public JobTypeRewardRatesData[] jobTypeRewardRatesDatas;
 
+    public RewardData[] rewardDatas;
+
     public bool isOffline;
 
 
@@ -161,6 +163,9 @@ public class GameData : MonoBehaviour
         jobTypeRewardRatesDatas = TitleDataManager.JobTypeRewardRatesMasterData.Select(x => x.Value).ToArray();
         Debug.Log(jobTypeRewardRatesDatas[0].jobType.ToString());
 
+        rewardDatas = new RewardData[TitleDataManager.RewardMasterData.Count];
+        rewardDatas = TitleDataManager.RewardMasterData.Select(x => x.Value).ToArray();
+        Debug.Log(rewardDatas[0].rewardName);
 
         // TODO　キャッシュするマスターデータが増えたら、ここに処理を追加する
 
