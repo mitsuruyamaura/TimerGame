@@ -273,6 +273,8 @@ MonoBehaviour:
     value: 0
   jobMasterDatas: []
   jobTypeRewardRatesDatas: []
+  rewardDatas: []
+  isOffline: 1
 --- !u!4 &80634935
 Transform:
   m_ObjectHideFlags: 0
@@ -1604,7 +1606,7 @@ MonoBehaviour:
   charaDetailsList: []
   rewardPopUpPrefab: {fileID: 5082059992489857053, guid: 66b79b1dd3bdc9140a79cd98213660c1, type: 3}
   rewardDataSO: {fileID: 11400000, guid: 5995efa330bbdd04283dfd19de557f51, type: 2}
-  JobTypeRewardRatesDataSO: {fileID: 11400000, guid: de986d0172ec09d4a9834c204a9fc132, type: 2}
+  jobTypeRewardRatesDataSO: {fileID: 11400000, guid: de986d0172ec09d4a9834c204a9fc132, type: 2}
   btnAlbum: {fileID: 1993179552}
   AlbumPopUpPrefab: {fileID: 6902920438741256364, guid: 9138909cfcfe6b34fa445108641dd97c, type: 3}
   jobDataSO: {fileID: 11400000, guid: 4038889f2fbd3eb4da96329abe07f464, type: 2}

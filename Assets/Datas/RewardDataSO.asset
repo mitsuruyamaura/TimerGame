@@ -13,33 +13,45 @@ MonoBehaviour:
   m_Name: RewardDataSO
   m_EditorClassIdentifier: 
   rewardDatasList:
-  - rewardNo: 0
+  - rewardName: A
+    rewardNo: 0
     rarityType: 0
     rarityRate: 50
-    spriteReward: {fileID: -4123898404141107686, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+    rewardSpriteNo: 0
     rewardPoint: 10
-  - rewardNo: 1
+    spriteReward: {fileID: -4123898404141107686, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+  - rewardName: B
+    rewardNo: 1
     rarityType: 0
     rarityRate: 40
-    spriteReward: {fileID: -4254514482229606543, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+    rewardSpriteNo: 1
     rewardPoint: 20
-  - rewardNo: 2
+    spriteReward: {fileID: -4254514482229606543, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+  - rewardName: C
+    rewardNo: 2
     rarityType: 0
     rarityRate: 30
-    spriteReward: {fileID: 1595546288144278568, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+    rewardSpriteNo: 2
     rewardPoint: 30
-  - rewardNo: 3
+    spriteReward: {fileID: 1595546288144278568, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+  - rewardName: D
+    rewardNo: 3
     rarityType: 1
     rarityRate: 60
-    spriteReward: {fileID: 4685148243946423279, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+    rewardSpriteNo: 3
     rewardPoint: 100
-  - rewardNo: 4
+    spriteReward: {fileID: 4685148243946423279, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+  - rewardName: E
+    rewardNo: 4
     rarityType: 1
     rarityRate: 40
-    spriteReward: {fileID: -6963256158415132927, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+    rewardSpriteNo: 4
     rewardPoint: 130
-  - rewardNo: 5
+    spriteReward: {fileID: -6963256158415132927, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+  - rewardName: F
+    rewardNo: 5
     rarityType: 2
     rarityRate: 100
-    spriteReward: {fileID: 7391234265640621957, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
+    rewardSpriteNo: 5
     rewardPoint: 500
+    spriteReward: {fileID: 7391234265640621957, guid: 8c5051214410a5245bf70e91eefad283, type: 3}
