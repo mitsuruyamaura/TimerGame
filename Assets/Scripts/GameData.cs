@@ -36,6 +36,8 @@ public class GameData : MonoBehaviour
 
     public JobTypeRewardRatesData[] jobTypeRewardRatesDatas;
 
+    public bool isOffline;
+
 
     private void Awake() {
         if(instance == null) {

@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     private RewardDataSO rewardDataSO;
 
     [SerializeField]
-    private JobTypeRewardRatesDataSO JobTypeRewardRatesDataSO;
+    private JobTypeRewardRatesDataSO jobTypeRewardRatesDataSO;
 
     [SerializeField]
     private UnityEngine.UI.Button btnAlbum;
@@ -47,7 +47,24 @@ public class GameManager : MonoBehaviour
     IEnumerator Start() {   // TODO コルーチンにする
         //OfflineTimeManager.instance.SetGameManager(this);
 
-        yield return new WaitUntil(() => LoginManager.isSetup);
+        // オフラインではない場合
+        if (!GameData.instance.isOffline) { 
+
+            // ログイン後のキャッシュ処理が完了するまで待機
+            yield return new WaitUntil(() => LoginManager.isSetup);
+
+            // 各スクリプタブル・オブジェクトの情報をタイトルデータの情報に更新
+            UpdataGameDataBases();
+
+            /// <summary>
+            /// 各スクリプタブル・オブジェクトの情報をタイトルデータの情報に更新
+            /// </summary>
+            void UpdataGameDataBases() {
+                jobDataSO.jobDatasList = TitleDataManager.JobMasterData.Select(x => x.Value).ToList();
+
+                jobTypeRewardRatesDataSO.jobTypeRewardRatesDataList = TitleDataManager.JobTypeRewardRatesMasterData.Select(x => x.Value).ToList();
+            }
+        }
 
         // 褒賞データの最大数を登録
         GameData.instance.GetMaxRewardDataCount(rewardDataSO.rewardDatasList.Count);
@@ -298,17 +315,17 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private RewardData GetLotteryForRewards(JobType jobType) {
         // 難易度による希少度の合計値を算出して、ランダムな値を抽出
-        int randomRarityValue = UnityEngine.Random.Range(0, JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates.Sum());
+        int randomRarityValue = UnityEngine.Random.Range(0, jobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates.Sum());
 
-        Debug.Log("今回のお使いの難易度 : " + jobType + " / 難易度による希少度の合計値 : " + JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates.Sum());
+        Debug.Log("今回のお使いの難易度 : " + jobType + " / 難易度による希少度の合計値 : " + jobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates.Sum());
         Debug.Log("希少度を決定するためのランダムな値 : " + randomRarityValue);
 
         RarityType rarityType = RarityType.Common;
         int total = 0;
 
         // 抽出した値がどの希少度になるか確認
-        for (int i = 0; i < JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList.Count; i++) {
-            total += JobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates[i];
+        for (int i = 0; i < jobTypeRewardRatesDataSO.jobTypeRewardRatesDataList.Count; i++) {
+            total += jobTypeRewardRatesDataSO.jobTypeRewardRatesDataList[(int)jobType].rewardRates[i];
             Debug.Log("希少度を決定するためのランダムな値 : " + randomRarityValue + " <= " + " 希少度の重み付けの合計値 : " + total);
             // 
             if (randomRarityValue <= total) {
