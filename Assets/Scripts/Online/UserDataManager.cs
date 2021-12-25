@@ -124,13 +124,14 @@ public static class UserDataManager {
 
         Debug.Log("PlayFab の仕事のデータを取得");
 
-
+        // 獲得している褒賞の情報を取得。取得できた場合には複合化、取得できない場合には新規褒賞管理データの作成
         Reward = userData.TryGetValue("Reward", out var reward)
             ? JsonConvert.DeserializeObject<Reward>(reward.Value) : Reward.Create();
 
+        // デバッグ用
         GameData.instance.haveReward = Reward;
 
-        Debug.Log("PlayFab の獲得している褒賞データを取得");
+        Debug.Log("PlayFab に登録されている、獲得している褒賞データを取得");
 
 
         // オンラインで経過した時間を計算
@@ -148,10 +149,10 @@ public static class UserDataManager {
     /// <param name="addCount"></param>
     public static void AddReward(RewardData rewardData, int addCount = 1) {
 
-        // Reward がインスタンスされていない場合には初期化
-        if(Reward == null) {
-            Reward = Reward.Create();
-        }
+        //// デバッグ用。Reward がインスタンスされていない場合には初期化
+        //if(Reward == null) {
+        //    Reward = Reward.Create();
+        //}
 
         Reward.rewardPoint += rewardData.rewardPoint;
 
@@ -162,19 +163,18 @@ public static class UserDataManager {
         }
     }
 
-
     /// <summary>
     /// 獲得した褒賞のデータの更新
     /// </summary>
-    /// <param name="userName"></param>
+    /// <param name="key">PlayFab に登録する際の key の名前</param>
     /// <param name="userDataPermission"></param>
     /// <returns></returns>
-    public static async UniTask<(bool isSuccess, string errorMessage)> UpdateHaveRewardDataAsync(string userName, UserDataPermission userDataPermission = UserDataPermission.Private) {
+    public static async UniTask<(bool isSuccess, string errorMessage)> UpdateHaveRewardDataAsync(string key, UserDataPermission userDataPermission = UserDataPermission.Private) {
 
         string rewardJson = JsonConvert.SerializeObject(Reward);
 
         var request = new UpdateUserDataRequest {
-            Data = new Dictionary<string, string> { { userName, rewardJson } },
+            Data = new Dictionary<string, string> { { key, rewardJson } },
 
             Permission = userDataPermission
         };
