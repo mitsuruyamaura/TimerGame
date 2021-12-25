@@ -5,6 +5,7 @@ using DG.Tweening;
 using System;
 using System.Linq;
 using UniRx;
+using Cysharp.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
 {
@@ -284,7 +285,7 @@ public class GameManager : MonoBehaviour
     /// お使いの成果発表
     /// キャラをタップすると呼び出す
     /// </summary>
-    public void ResultJobs(TapPointDetail tapPointDetail) {
+    public async void ResultJobs(TapPointDetail tapPointDetail) {
 
         // TODO 結果
         //Debug.Log("成果 発表");
@@ -304,6 +305,19 @@ public class GameManager : MonoBehaviour
 
         // 褒賞ポイントのセーブ
         GameData.instance.SaveTotalRewardPoint();
+
+
+        // オンライン用
+
+        GameData.instance.AddReward(rewardData, 1);
+
+        UserDataManager.AddReward(rewardData, 1);
+
+        (bool isSuccess, string errorMessage) = await UserDataManager.UpdateHaveRewardDataAsync("Reward");
+
+        if (!isSuccess) {
+            Debug.Log(errorMessage);
+        }
 
         // TODO ポップアップ表示
         //Debug.Log("ポップアップ表示");

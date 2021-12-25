@@ -16,6 +16,9 @@ public static class UserDataManager {
 
     private const string FORMAT = "yyyy/MM/dd HH:mm:ss";
 
+    public static Reward Reward { get; set; }
+
+
 
     /// <summary>
     /// プレイヤーデータ内の作成と更新(プレイヤーデータ(タイトル)の Key に１つだけ値を登録する方法)
@@ -87,6 +90,7 @@ public static class UserDataManager {
         if (response.Error != null) {
 
             Debug.Log("エラー");
+            return (false, response.Error.ToString());
         }
 
         return (true, string.Empty);
@@ -127,4 +131,55 @@ public static class UserDataManager {
         // TODO 他にも処理があれば追加
 
     }
+
+    /// <summary>
+    /// 獲得した褒賞の追加・加算
+    /// </summary>
+    /// <param name="rewardData"></param>
+    /// <param name="addCount"></param>
+    public static void AddReward(RewardData rewardData, int addCount = 1) {
+
+        // Reward がインスタンスされていない場合には初期化
+        if(Reward == null) {
+            Reward = Reward.Create();
+        }
+
+        Reward.rewardPoint += rewardData.rewardPoint;
+
+        if (Reward.rewardInfosList.Exists(x => x.rewardNo == rewardData.rewardNo)) {
+            Reward.rewardInfosList.Find(x => x.rewardNo == rewardData.rewardNo).rewardCount++;
+        } else {
+            Reward.rewardInfosList.Add(new RewardInfo { rewardNo = rewardData.rewardNo, rewardCount = addCount });
+        }
+    }
+
+
+    /// <summary>
+    /// 獲得した褒賞のデータの更新
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <param name="userDataPermission"></param>
+    /// <returns></returns>
+    public static async UniTask<(bool isSuccess, string errorMessage)> UpdateHaveRewardDataAsync(string userName, UserDataPermission userDataPermission = UserDataPermission.Private) {
+
+        string rewardJson = JsonConvert.SerializeObject(Reward);
+
+        var request = new UpdateUserDataRequest {
+            Data = new Dictionary<string, string> { { userName, rewardJson } },
+
+            Permission = userDataPermission
+        };
+
+        var response = await PlayFabClientAPI.UpdateUserDataAsync(request);
+
+        if (response.Error != null) {
+            Debug.Log("エラー");
+            return (false, response.Error.ToString());
+        }
+
+        return (true, string.Empty);
+    }
+
+
+
 }
