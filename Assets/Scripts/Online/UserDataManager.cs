@@ -124,6 +124,15 @@ public static class UserDataManager {
 
         Debug.Log("PlayFab の仕事のデータを取得");
 
+
+        Reward = userData.TryGetValue("Reward", out var reward)
+            ? JsonConvert.DeserializeObject<Reward>(reward.Value) : Reward.Create();
+
+        GameData.instance.haveReward = Reward;
+
+        Debug.Log("PlayFab の獲得している褒賞データを取得");
+
+
         // オンラインで経過した時間を計算
         //OfflineTimeManager.instance.CalculateOfflineDateTimeElasped(OfflineTimeManager.instance.LoadDateTime);
 
@@ -179,7 +188,4 @@ public static class UserDataManager {
 
         return (true, string.Empty);
     }
-
-
-
 }
