@@ -40,6 +40,8 @@ public class GameData : MonoBehaviour
 
     public bool isOffline;
 
+    public Reward haveReward;
+
 
     private void Awake() {
         if(instance == null) {
@@ -169,5 +171,24 @@ public class GameData : MonoBehaviour
 
         // TODO　キャッシュするマスターデータが増えたら、ここに処理を追加する
 
+    }
+
+    /// <summary>
+    /// オンライン用の褒賞の追加・加算
+    /// </summary>
+    /// <param name="rewardData"></param>
+    public void AddReward(RewardData rewardData, int addCount = 1) {
+
+        haveReward.rewardPoint += rewardData.rewardPoint;
+
+        // すでにリストに登録がある褒賞か確認
+        if (haveReward.rewardInfosList.Exists(x => x.rewardNo == rewardData.rewardNo)) {
+            // 登録がある場合には加算
+            haveReward.rewardInfosList.Find(x => x.rewardNo == rewardData.rewardNo).rewardCount++;
+
+        } else {
+            // 登録がない場合には新しく追加
+            haveReward.rewardInfosList.Add(new RewardInfo { rewardNo = rewardData.rewardNo, rewardCount = addCount });
+        }
     }
 }
