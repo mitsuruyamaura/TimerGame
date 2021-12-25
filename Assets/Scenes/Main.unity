@@ -274,7 +274,7 @@ MonoBehaviour:
   jobMasterDatas: []
   jobTypeRewardRatesDatas: []
   rewardDatas: []
-  isOffline: 1
+  isOffline: 0
 --- !u!4 &80634935
 Transform:
   m_ObjectHideFlags: 0
