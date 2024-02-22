@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
+using UniRx;
 
 public class OfflineTimeManager : MonoBehaviour
 {
@@ -82,6 +83,43 @@ public class OfflineTimeManager : MonoBehaviour
         //LoadOfflineJobTimeData(0);
     }
 
+    private void Start() {
+
+        // UniRx で OnApplicationQuit メソッドを非同期処理を待機して実行できるようにする
+        Observable.OnceApplicationQuit()
+            .Subscribe(_ => {
+                QuitGameAsync().Forget();　　// Forget メソッドで、async メソッドになっていないメソッド内での async メソッドの呼び出しの警告を回避できる
+            });
+    }
+
+    /// <summary>
+    /// UniRx + UniTask による OnApplicationQuit 内の非同期の待機処理
+    /// </summary>
+    /// <returns></returns>
+    private async UniTask QuitGameAsync() {
+
+        // オフラインではない場合
+        if (!GameData.instance.isOffline) {
+            // PlayFab にゲーム終了時の時間を保存
+            await OnlineTimeManager.UpdateLogOffTimeAsync();
+
+            // PlayFab に仕事の残り時間を保存
+            if (workingJobTimeDatasList.Count > 0) {
+                await OnlineTimeManager.UpdateJobTimeAsync(workingJobTimeDatasList);
+            }
+        } else {
+            SaveOfflineDateTime();
+
+            DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
+
+            // お使い中のデータがある場合、お使いの時間データをセーブ
+            for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
+                SaveWorkingJobTimeData(workingJobTimeDatasList[i].jobNo);
+            }
+        }
+        Debug.Log("ゲームを終了します。");
+    }
+
     /// <summary>
     /// オフラインでの経過時間を計算
     /// </summary>
@@ -116,31 +154,30 @@ public class OfflineTimeManager : MonoBehaviour
     }
 
     /// <summary>
+    /// UniTask のみで実装する場合。OnApplicationQuit を UniTask にして利用する(現在は不使用)
     /// ゲームが終了したときに自動的に呼ばれる
     /// </summary>
-    private async UniTask OnApplicationQuit() {　　　　　　//　async UniTask に変更
+    //private async UniTask OnApplicationQuit() {　　　　　　//　async UniTask に変更
 
-        // PlayFab にゲーム終了時の時間を保存
-        await OnlineTimeManager.UpdateLogOffTimeAsync();
+    // PlayFab にゲーム終了時の時間を保存
+    //await OnlineTimeManager.UpdateLogOffTimeAsync();
 
-        // PlayFab に仕事の残り時間を保存
-        if (workingJobTimeDatasList.Count > 0) {
-            await OnlineTimeManager.UpdateJobTimeAsync(workingJobTimeDatasList);
-        }
+    //// PlayFab に仕事の残り時間を保存
+    //if (workingJobTimeDatasList.Count > 0) {
+    //    await OnlineTimeManager.UpdateJobTimeAsync(workingJobTimeDatasList);
+    //}
 
+    // オフライン
+    //SaveOfflineDateTime();
+    //Debug.Log("ゲームを終了します。");
 
-        SaveOfflineDateTime();
-        Debug.Log("ゲーム中断。時間のセーブ完了");
+    ////DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
 
-        DebugManager.instance.DisplayDebugDialog("ゲーム中断。時間のセーブ完了");
-
-        
-
-        // お使い中のデータがある場合、お使いの時間データをセーブ
-        for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
-            SaveWorkingJobTimeData(workingJobTimeDatasList[i].jobNo);
-        }
-    }
+    //// オフライン。お使い中のデータがある場合、お使いの時間データをセーブ
+    //for (int i = 0; i < workingJobTimeDatasList.Count; i++) {
+    //    SaveWorkingJobTimeData(workingJobTimeDatasList[i].jobNo);
+    //}
+    //}
 
     /// <summary>
     /// オフラインでの時間をロード
@@ -216,7 +253,7 @@ public class OfflineTimeManager : MonoBehaviour
         //PlayerPrefs.Save();
 
         //string str = DateTime.Now.ToString(FORMAT);
-        Debug.Log($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
+        //Debug.Log($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
 
         // ゲーム終了しているので、画面で見れないため不要
         //DebugManager.instance.DisplayDebugDialog($"ゲーム終了時 : セーブ時間 : {dateTimeString}");
